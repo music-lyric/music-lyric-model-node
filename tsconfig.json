@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "removeComments": false,
+    "strict": true,
+    "target": "esnext",
+    "paths": {
+      "@root/*": ["./src/*"],
+      "@gen/*": ["./gen/*"]
+    }
+  },
+  "include": ["./src/**/*.ts", "./gen/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}
