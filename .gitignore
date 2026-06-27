@@ -1,0 +1,35 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+
+# Build
+dist/
+/gen
+
+# TypeScript
+*.tsbuildinfo
+
+# Test coverage
+coverage/
+
+# Caches
+.npm
+.eslintcache
+*.tgz
+
+# Vite
+vite.config.*.timestamp-*
