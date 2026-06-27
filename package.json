@@ -6,7 +6,7 @@
   "description": "Music Lyric Model",
   "license": "MIT",
   "scripts": {
-    "generate": "buf generate",
+    "generate": "buf generate proto",
     "build": "vite build"
   },
   "homepage": "https://github.com/music-lyric/music-lyric-model-node#readme",
