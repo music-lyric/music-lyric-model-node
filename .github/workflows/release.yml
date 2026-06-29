@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -36,10 +37,27 @@ jobs:
       - name: Generate Proto
         run: npm run generate:proto
 
+      - name: Test
+        run: npm test
+
       - name: Build
         run: npm run build
 
+      - name: Check Published
+        id: published
+        run: |
+          name=$(node -p "require('./package.json').name")
+          version=$(node -p "require('./package.json').version")
+          published=$(npm view "$name@$version" version 2>/dev/null || true)
+          if [ "$published" = "$version" ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "$name@$version already on npm, skipping publish"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Publish
+        if: steps.published.outputs.exists == 'false'
         run: npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
