@@ -9,7 +9,8 @@
     "generate": "npm run generate:proto && npm run generate:version",
     "generate:proto": "buf generate proto",
     "generate:version": "tsx script/generate-proto-version.ts",
-    "build": "vite build"
+    "build": "vite build",
+    "test": "tsx --test \"test/**/*.test.ts\""
   },
   "homepage": "https://github.com/music-lyric/music-lyric-model-node#readme",
   "bugs": {
