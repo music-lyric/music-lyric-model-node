@@ -2,11 +2,11 @@
 
 [English](./README.md) | [简体中文](./README.zh-Hans.md) | [繁體中文](./README.zh-Hant.md)
 
-The Node binding for the **music lyric model**.
+**music lyric model** 的 Node 綁定.
 
-## Usage
+## 使用
 
-Install from npm:
+從 npm 安裝:
 
 ```bash
 npm install music-lyric-model
@@ -15,7 +15,7 @@ npm install music-lyric-model
 ```ts
 import { makeInfo, encodeInfo, decodeInfo, infoToJson, infoFromJson, InfoType } from 'music-lyric-model'
 
-// makeInfo stamps the current SCHEMA_VERSION.
+// makeInfo 會蓋上當前的 SCHEMA_VERSION.
 const info = makeInfo()
 info.type = InfoType.NORMAL
 
@@ -26,34 +26,34 @@ const fromBytes = decodeInfo(bytes)
 const fromJson  = infoFromJson(json)
 ```
 
-## Build
+## 建置
 
-### Requirements
+### 環境需求
 
 - Node.js ≥ 22
 
 ### npm
 
-Install dependencies and build:
+安裝依賴並建置:
 
 ```bash
 npm install
 npm run build
 ```
 
-`npm test` runs the test suite.
+`npm test` 執行測試.
 
-### Generate
+### 產生
 
-Regenerate `gen/` from the proto submodule (requires `buf`):
+從 proto submodule 重新產生 `gen/` (需要 `buf`):
 
 ```bash
-git submodule update --init --recursive   # fetch proto/
+git submodule update --init --recursive   # 拉取 proto/
 npm run generate
 ```
 
-`npm run generate` chains `generate:proto` and `generate:version`.
+`npm run generate` 串聯 `generate:proto` 與 `generate:version`.
 
-## License
+## 授權
 
-Released under the [MIT License](./LICENSE).
+基於 [MIT License](./LICENSE) 發布.
