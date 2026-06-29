@@ -6,7 +6,7 @@
   "description": "Music Lyric Model",
   "license": "MIT",
   "scripts": {
-    "generate": "npm run generate:proto && generate:version",
+    "generate": "npm run generate:proto && npm run generate:version",
     "generate:proto": "buf generate proto",
     "generate:version": "tsx script/generate-proto-version.ts",
     "build": "vite build"
