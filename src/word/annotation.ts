@@ -1,32 +1,9 @@
 import type { MessageInitShape } from '@bufbuild/protobuf'
-import type { Word, WordAnnotation, WordAnnotationContent, WordAnnotationRoman, WordAnnotationRuby, WordAnnotationUnknown } from '@root/proto'
+import type { WordAnnotation, WordAnnotationContent, WordAnnotationRoman, WordAnnotationRuby, WordAnnotationUnknown } from '@root/proto'
 
-import {
-  WordNormalSchema,
-  WordSchema,
-  WordSpaceSchema,
-  WordAnnotationContentSchema,
-  WordAnnotationRomanSchema,
-  WordAnnotationRubySchema,
-  WordAnnotationSchema,
-  WordAnnotationUnknownSchema,
-} from '@root/proto'
+import { WordAnnotationContentSchema, WordAnnotationRomanSchema, WordAnnotationRubySchema, WordAnnotationSchema, WordAnnotationUnknownSchema } from '@root/proto'
 
 import { create } from '@bufbuild/protobuf'
-
-/**
- * Creates a normal word wrapped in a Word.
- */
-export const makeWordNormal = (init?: MessageInitShape<typeof WordNormalSchema>): Word => {
-  return create(WordSchema, { body: { case: 'normal', value: init ?? {} } })
-}
-
-/**
- * Creates a run of spaces wrapped in a Word.
- */
-export const makeWordSpace = (init?: MessageInitShape<typeof WordSpaceSchema>): Word => {
-  return create(WordSchema, { body: { case: 'space', value: init ?? {} } })
-}
 
 /**
  * Creates a WordAnnotationContent, one token of a word annotation.
@@ -61,4 +38,15 @@ export const makeWordAnnotationUnknown = (init?: MessageInitShape<typeof WordAnn
  */
 export const makeWordAnnotation = (init?: MessageInitShape<typeof WordAnnotationSchema>): WordAnnotation => {
   return create(WordAnnotationSchema, init)
+}
+
+/**
+ * Text joined from every annotation token.
+ */
+export const getWordAnnotationText = (item: { words: WordAnnotationContent[] }): string => {
+  let result = ''
+  for (let i = 0, len = item.words.length; i < len; i++) {
+    result += item.words[i].content
+  }
+  return result
 }

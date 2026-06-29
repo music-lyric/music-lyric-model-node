@@ -11,3 +11,10 @@ import { create } from '@bufbuild/protobuf'
 export const makeTime = (init?: MessageInitShape<typeof TimeSchema>): Time => {
   return create(TimeSchema, init)
 }
+
+/**
+ * Duration of a time range in milliseconds.
+ */
+export const getTimeDuration = (time?: Time): number => {
+  return time ? time.end - time.start : 0
+}
