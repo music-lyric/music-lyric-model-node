@@ -19,11 +19,11 @@ import { makeInfo, encodeInfo, decodeInfo, infoToJson, infoFromJson, InfoType } 
 const info = makeInfo()
 info.type = InfoType.NORMAL
 
-const bytes = encodeInfo(info)  // Uint8Array
-const json  = infoToJson(info)  // JSON
+const bytes = encodeInfo(info) // Uint8Array
+const json = infoToJson(info) // JSON
 
 const fromBytes = decodeInfo(bytes)
-const fromJson  = infoFromJson(json)
+const fromJson = infoFromJson(json)
 ```
 
 ## Build

@@ -1,7 +1,21 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
-import { getActiveWord, getActiveWordIndex, getWordDuration, getWordRuby, getWordText, getWordTime, isWordNormal, isWordSpace, makeWordNormal, makeWordSpace, makeWordAnnotation, makeWordAnnotationContent, makeWordAnnotationRuby } from '@root/word'
+import {
+  getActiveWord,
+  getActiveWordIndex,
+  getWordDuration,
+  getWordRuby,
+  getWordText,
+  getWordTime,
+  isWordNormal,
+  isWordSpace,
+  makeWordNormal,
+  makeWordSpace,
+  makeWordAnnotation,
+  makeWordAnnotationContent,
+  makeWordAnnotationRuby,
+} from '@root/word'
 
 test('guards narrow the word body', () => {
   const normal = makeWordNormal({ content: 'hi' })

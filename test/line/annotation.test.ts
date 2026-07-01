@@ -14,9 +14,20 @@ import {
   makeLineAnnotationTranslate,
   makeLineNormal,
 } from '@root/line'
-import { makeWordAnnotation, makeWordAnnotationContent, makeWordAnnotationRoman, makeWordAnnotationTranslate, makeWordAnnotationUnknown, makeWordNormal, makeWordSpace } from '@root/word'
+import {
+  makeWordAnnotation,
+  makeWordAnnotationContent,
+  makeWordAnnotationRoman,
+  makeWordAnnotationTranslate,
+  makeWordAnnotationUnknown,
+  makeWordNormal,
+  makeWordSpace,
+} from '@root/word'
 
-const translates = [makeLineAnnotationTranslate({ content: '你好', language: 'zh-hans' }), makeLineAnnotationTranslate({ content: 'hi', language: 'en' })]
+const translates = [
+  makeLineAnnotationTranslate({ content: '你好', language: 'zh-hans' }),
+  makeLineAnnotationTranslate({ content: 'hi', language: 'en' }),
+]
 const line = makeLineNormal({
   content: {
     annotation: makeLineAnnotation({ translates, romans: [makeLineAnnotationRoman({ content: 'nihao' })] }),
@@ -60,12 +71,25 @@ test('deriveLineRomans joins tokens in word order with padded spacing', () => {
 test('deriveLineRomans keeps one item per language in first-seen order', () => {
   const words = [romanWord('a', 'A', 'x'), romanWord('b', 'B', 'y')]
   const romans = deriveLineRomans(words)
-  assert.deepEqual(romans.map(item => item.language), ['x', 'y'])
-  assert.deepEqual(romans.map(item => item.content), ['A', 'B'])
+  assert.deepEqual(
+    romans.map((item) => item.language),
+    ['x', 'y'],
+  )
+  assert.deepEqual(
+    romans.map((item) => item.content),
+    ['A', 'B'],
+  )
 })
 
 test('deriveLineTranslates aggregates word translations', () => {
-  const words = [makeWordNormal({ content: '猫', annotation: makeWordAnnotation({ translates: [makeWordAnnotationTranslate({ language: 'en', words: [makeWordAnnotationContent({ content: 'cat' })] })] }) })]
+  const words = [
+    makeWordNormal({
+      content: '猫',
+      annotation: makeWordAnnotation({
+        translates: [makeWordAnnotationTranslate({ language: 'en', words: [makeWordAnnotationContent({ content: 'cat' })] })],
+      }),
+    }),
+  ]
   const [item] = deriveLineTranslates(words)
   assert.equal(item.content, 'cat')
   assert.equal(item.language, 'en')
@@ -74,8 +98,18 @@ test('deriveLineTranslates aggregates word translations', () => {
 
 test('deriveLineUnknowns groups by original key', () => {
   const words = [
-    makeWordNormal({ content: 'x', annotation: makeWordAnnotation({ unknowns: [makeWordAnnotationUnknown({ key: 'note', words: [makeWordAnnotationContent({ content: 'a' })] })] }) }),
-    makeWordNormal({ content: 'y', annotation: makeWordAnnotation({ unknowns: [makeWordAnnotationUnknown({ key: 'note', words: [makeWordAnnotationContent({ content: 'b' })] })] }) }),
+    makeWordNormal({
+      content: 'x',
+      annotation: makeWordAnnotation({
+        unknowns: [makeWordAnnotationUnknown({ key: 'note', words: [makeWordAnnotationContent({ content: 'a' })] })],
+      }),
+    }),
+    makeWordNormal({
+      content: 'y',
+      annotation: makeWordAnnotation({
+        unknowns: [makeWordAnnotationUnknown({ key: 'note', words: [makeWordAnnotationContent({ content: 'b' })] })],
+      }),
+    }),
   ]
   const unknowns = deriveLineUnknowns(words)
   assert.equal(unknowns.length, 1)

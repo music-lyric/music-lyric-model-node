@@ -1,7 +1,28 @@
 import type { MessageInitShape } from '@bufbuild/protobuf'
-import type { Time, Word, WordAnnotation, WordAnnotationContent, WordAnnotationRoman, WordAnnotationRuby, WordAnnotationTranslate, WordAnnotationUnknown, WordNormal, WordSpace } from '@root/proto'
+import type {
+  Time,
+  Word,
+  WordAnnotation,
+  WordAnnotationContent,
+  WordAnnotationRoman,
+  WordAnnotationRuby,
+  WordAnnotationTranslate,
+  WordAnnotationUnknown,
+  WordNormal,
+  WordSpace,
+} from '@root/proto'
 
-import { WordAnnotationContentSchema, WordAnnotationRomanSchema, WordAnnotationRubySchema, WordAnnotationSchema, WordAnnotationTranslateSchema, WordAnnotationUnknownSchema, WordNormalSchema, WordSchema, WordSpaceSchema } from '@root/proto'
+import {
+  WordAnnotationContentSchema,
+  WordAnnotationRomanSchema,
+  WordAnnotationRubySchema,
+  WordAnnotationSchema,
+  WordAnnotationTranslateSchema,
+  WordAnnotationUnknownSchema,
+  WordNormalSchema,
+  WordSchema,
+  WordSpaceSchema,
+} from '@root/proto'
 
 import { create } from '@bufbuild/protobuf'
 import { getTimeDuration, isTimeActive } from '@root/common'

@@ -2,7 +2,16 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
 import { AgentType } from '@root/proto'
-import { getAgentById, getAgentLineCounts, getAgentsByType, getPrimaryAgent, hasAgent, makeAgentItem, makeLineAgent, resolveLineAgent } from '@root/agent'
+import {
+  getAgentById,
+  getAgentLineCounts,
+  getAgentsByType,
+  getPrimaryAgent,
+  hasAgent,
+  makeAgentItem,
+  makeLineAgent,
+  resolveLineAgent,
+} from '@root/agent'
 import { makeInfo } from '@root/info'
 import { makeLineInterlude, makeLineNormal } from '@root/line'
 
