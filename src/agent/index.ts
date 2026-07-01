@@ -39,7 +39,7 @@ export const makeLineAgent = (init?: MessageInitShape<typeof LineAgentSchema>): 
  * Agent with the given id.
  */
 export const getAgentById = (agents: AgentItem[], id: string): AgentItem | undefined => {
-  return agents.find((item) => item.id === id)
+  return agents.find(item => item.id === id)
 }
 
 /**
@@ -135,15 +135,15 @@ export const getPrimaryAgent = (info: Info): AgentItem | undefined => {
 }
 
 /**
- * Whether any agent of a type exists.
- */
-export const hasAgent = (agents: AgentItem[], type: AgentType): boolean => {
-  return agents.some(item => item.type === type)
-}
-
-/**
  * All agents of a type.
  */
 export const getAgentsByType = (agents: AgentItem[], type: AgentType): AgentItem[] => {
   return agents.filter(item => item.type === type)
+}
+
+/**
+ * Whether any agent of a type exists.
+ */
+export const hasAgent = (agents: AgentItem[], type: AgentType): boolean => {
+  return agents.some(item => item.type === type)
 }

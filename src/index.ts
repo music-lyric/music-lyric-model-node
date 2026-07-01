@@ -2,7 +2,7 @@ export * from './proto'
 
 export * from './info'
 
-export * from './common/time'
+export * from './common'
 export * from './language'
 export * from './agent'
 export * from './meta'

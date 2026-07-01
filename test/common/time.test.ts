@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
-import { getTimeDuration, getTimeProgress, isTimeActive, makeTime } from '@root/common/time'
+import { getTimeDuration, getTimeProgress, isTimeActive, makeTime } from '@root/common'
 
 test('makeTime sets start and end', () => {
   const time = makeTime({ start: 100, end: 250 })

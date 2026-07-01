@@ -20,13 +20,6 @@ export const getTimeDuration = (time?: Time): number => {
 }
 
 /**
- * Whether the time range is active at the given moment in milliseconds.
- */
-export const isTimeActive = (time: Time | undefined, ms: number): boolean => {
-  return time ? ms >= time.start && ms < time.end : false
-}
-
-/**
  * Progress within a time range at the given moment, clamped to 0..1.
  */
 export const getTimeProgress = (time: Time | undefined, ms: number): number => {
@@ -41,4 +34,11 @@ export const getTimeProgress = (time: Time | undefined, ms: number): number => {
     return 1
   }
   return (ms - time.start) / duration
+}
+
+/**
+ * Whether the time range is active at the given moment in milliseconds.
+ */
+export const isTimeActive = (time: Time | undefined, ms: number): boolean => {
+  return time ? ms >= time.start && ms < time.end : false
 }

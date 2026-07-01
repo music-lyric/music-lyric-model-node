@@ -45,7 +45,7 @@ export const makeMetaReference = (init?: MessageInitShape<typeof MetaReferenceSc
  */
 export const getMetaText = (items: MetaText[], language?: string): string | undefined => {
   if (language !== undefined) {
-    const matched = items.find((item) => item.language === language)
+    const matched = items.find(item => item.language === language)
     if (matched) {
       return matched.value
     }
@@ -57,12 +57,12 @@ export const getMetaText = (items: MetaText[], language?: string): string | unde
  * Unrecognized meta values carrying the given original key.
  */
 export const getMetaUnknown = (unknowns: MetaUnknown[], key: string): string[] => {
-  return unknowns.filter((item) => item.key === key).map((item) => item.value)
+  return unknowns.filter(item => item.key === key).map(item => item.value)
 }
 
 /**
  * Reference ids for the given platform.
  */
 export const getMetaReference = (references: MetaReference[], platform: string): string[] => {
-  return references.find((item) => item.platform === platform)?.ids ?? []
+  return references.find(item => item.platform === platform)?.ids ?? []
 }
