@@ -1,7 +1,21 @@
 import type { MessageInitShape } from '@bufbuild/protobuf'
-import type { WordAnnotation, WordAnnotationContent, WordAnnotationRoman, WordAnnotationRuby, WordAnnotationUnknown } from '@root/proto'
+import type {
+  WordAnnotation,
+  WordAnnotationContent,
+  WordAnnotationRoman,
+  WordAnnotationRuby,
+  WordAnnotationTranslate,
+  WordAnnotationUnknown,
+} from '@root/proto'
 
-import { WordAnnotationContentSchema, WordAnnotationRomanSchema, WordAnnotationRubySchema, WordAnnotationSchema, WordAnnotationUnknownSchema } from '@root/proto'
+import {
+  WordAnnotationContentSchema,
+  WordAnnotationRomanSchema,
+  WordAnnotationRubySchema,
+  WordAnnotationSchema,
+  WordAnnotationTranslateSchema,
+  WordAnnotationUnknownSchema,
+} from '@root/proto'
 
 import { create } from '@bufbuild/protobuf'
 
@@ -17,6 +31,13 @@ export const makeWordAnnotationContent = (init?: MessageInitShape<typeof WordAnn
  */
 export const makeWordAnnotationRoman = (init?: MessageInitShape<typeof WordAnnotationRomanSchema>): WordAnnotationRoman => {
   return create(WordAnnotationRomanSchema, init)
+}
+
+/**
+ * Creates a WordAnnotationTranslate.
+ */
+export const makeWordAnnotationTranslate = (init?: MessageInitShape<typeof WordAnnotationTranslateSchema>): WordAnnotationTranslate => {
+  return create(WordAnnotationTranslateSchema, init)
 }
 
 /**

@@ -1,17 +1,24 @@
 import type { MessageInitShape } from '@bufbuild/protobuf'
-import type { Line, LineAnnotation, LineBackground, LineInterlude, LineNormal, Time, Word } from '@root/proto'
+import type { Line, LineAnnotation, LineBackground, LineContent, LineInterlude, LineNormal, Time, Word } from '@root/proto'
 
-import { LineBackgroundSchema, LineInterludeSchema, LineNormalSchema, LineSchema } from '@root/proto'
+import { LineBackgroundSchema, LineContentSchema, LineNormalSchema, LineSchema, TimeSchema } from '@root/proto'
 
 import { create } from '@bufbuild/protobuf'
 import { getTimeDuration } from '@root/common/time'
 import { getWordText } from '@root/word'
 
 /**
- * Creates a normal line wrapped in a Line.
+ * Creates a LineContent, the sung content shared by normal and background lines.
  */
-export const makeLineNormal = (init?: MessageInitShape<typeof LineNormalSchema>): Line => {
-  return create(LineSchema, { body: { case: 'normal', value: init ?? {} } })
+export const makeLineContent = (init?: MessageInitShape<typeof LineContentSchema>): LineContent => {
+  return create(LineContentSchema, init)
+}
+
+/**
+ * Creates a normal line wrapped in a Line, with an optional time range.
+ */
+export const makeLineNormal = (init?: MessageInitShape<typeof LineNormalSchema>, time?: MessageInitShape<typeof TimeSchema>): Line => {
+  return create(LineSchema, { time, body: { case: 'normal', value: init ?? {} } })
 }
 
 /**
@@ -22,10 +29,10 @@ export const makeLineBackground = (init?: MessageInitShape<typeof LineBackground
 }
 
 /**
- * Creates an interlude wrapped in a Line.
+ * Creates an interlude wrapped in a Line, with an optional time range.
  */
-export const makeLineInterlude = (init?: MessageInitShape<typeof LineInterludeSchema>): Line => {
-  return create(LineSchema, { body: { case: 'interlude', value: init ?? {} } })
+export const makeLineInterlude = (time?: MessageInitShape<typeof TimeSchema>): Line => {
+  return create(LineSchema, { time, body: { case: 'interlude', value: {} } })
 }
 
 /**
@@ -46,7 +53,7 @@ export const isLineInterlude = (line: Line): line is Line & { body: { case: 'int
  * Time range of a line.
  */
 export const getLineTime = (line: Line): Time | undefined => {
-  return line.body.value?.time
+  return line.time
 }
 
 /**
@@ -57,10 +64,17 @@ export const getLineDuration = (line: Line): number => {
 }
 
 /**
+ * Content of a line, absent on an interlude.
+ */
+export const getLineContent = (line: Line): LineContent | undefined => {
+  return isLineNormal(line) ? line.body.value.content : undefined
+}
+
+/**
  * Words of a line, empty for an interlude.
  */
 export const getLineWords = (line: Line): Word[] => {
-  return isLineNormal(line) ? line.body.value.words : []
+  return getLineContent(line)?.words ?? []
 }
 
 /**
@@ -99,19 +113,19 @@ export const getWordsLanguages = (words: Word[]): string[] => {
  * Languages of a line: the explicit tags, otherwise those of its words.
  */
 export const getLineLanguages = (line: Line): string[] => {
-  if (!isLineNormal(line)) {
+  const content = getLineContent(line)
+  if (!content) {
     return []
   }
-  const normal = line.body.value
-  if (normal.languages.length) {
-    return normal.languages
+  if (content.languages.length) {
+    return content.languages
   }
-  return getWordsLanguages(normal.words)
+  return getWordsLanguages(content.words)
 }
 
 /**
  * Annotation of a line, absent on an interlude.
  */
 export const getLineAnnotation = (line: Line): LineAnnotation | undefined => {
-  return isLineNormal(line) ? line.body.value.annotation : undefined
+  return getLineContent(line)?.annotation
 }

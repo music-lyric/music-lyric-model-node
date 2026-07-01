@@ -5,7 +5,9 @@ import { getFirstAnnotation, getLineRoman, getLineTranslate, makeLineAnnotation,
 
 const translates = [makeLineAnnotationTranslate({ content: '你好', language: 'zh-hans' }), makeLineAnnotationTranslate({ content: 'hi', language: 'en' })]
 const line = makeLineNormal({
-  annotation: makeLineAnnotation({ translates, romans: [makeLineAnnotationRoman({ content: 'nihao' })] }),
+  content: {
+    annotation: makeLineAnnotation({ translates, romans: [makeLineAnnotationRoman({ content: 'nihao' })] }),
+  },
 })
 
 test('getFirstAnnotation prefers a language match then falls back', () => {

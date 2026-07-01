@@ -43,45 +43,6 @@ export const infoFromJson = (json: JsonValue): Info => {
 }
 
 /**
- * Fill each line agent's index and each agent's line count snapshots.
- */
-export const calcAgentIndex = (info: Info): void => {
-  const globalIndex = new Map<string, number>()
-  const idIndex = new Map<string, number>()
-
-  let id: string | null = null
-  let blockIndex = 0
-
-  for (const line of info.lines) {
-    if (!isLineNormal(line)) {
-      continue
-    }
-    const agent = line.body.value.agent
-    if (!agent) {
-      continue
-    }
-
-    const current = agent.id
-
-    const gi = globalIndex.get(current) ?? 0
-    agent.globalIndex = gi
-    globalIndex.set(current, gi + 1)
-
-    if (current !== id) {
-      blockIndex = 0
-      id = current
-    }
-    agent.blockIndex = blockIndex++
-
-    idIndex.set(current, (idIndex.get(current) ?? 0) + 1)
-  }
-
-  for (const agent of info.agents) {
-    agent.count = idIndex.get(agent.id) ?? 0
-  }
-}
-
-/**
  * Sort lines and their background lines by start time ascending.
  */
 export const sortLinesByTime = (info: Info): void => {

@@ -18,13 +18,17 @@ import {
 } from '@root/line'
 import { makeWordNormal, makeWordSpace } from '@root/word'
 
-const normal = makeLineNormal({
-  time: { start: 1000, end: 2000 },
-  languages: [],
-  words: [makeWordNormal({ content: 'hello', language: 'en' }), makeWordSpace({ count: 1 }), makeWordNormal({ content: '漢', language: 'ja' })],
-  annotation: makeLineAnnotation(),
-})
-const interlude = makeLineInterlude({ time: { start: 2000, end: 3000 } })
+const normal = makeLineNormal(
+  {
+    content: {
+      languages: [],
+      words: [makeWordNormal({ content: 'hello', language: 'en' }), makeWordSpace({ count: 1 }), makeWordNormal({ content: '漢', language: 'ja' })],
+      annotation: makeLineAnnotation(),
+    },
+  },
+  { start: 1000, end: 2000 },
+)
+const interlude = makeLineInterlude({ start: 2000, end: 3000 })
 
 test('guards narrow the line body', () => {
   assert.equal(isLineNormal(normal), true)
@@ -32,7 +36,7 @@ test('guards narrow the line body', () => {
   assert.equal(isLineNormal(interlude), false)
 })
 
-test('getLineTime and getLineDuration read across the oneof', () => {
+test('getLineTime and getLineDuration read the line time', () => {
   assert.equal(getLineTime(normal)?.start, 1000)
   assert.equal(getLineTime(interlude)?.end, 3000)
   assert.equal(getLineDuration(normal), 1000)

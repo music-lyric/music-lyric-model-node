@@ -1,66 +1,68 @@
 import type { MessageInitShape } from '@bufbuild/protobuf'
-import type { MetaCreator, MetaItem } from '@root/proto'
+import type { Meta, MetaCredit, MetaReference, MetaText, MetaUnknown } from '@root/proto'
 
-import { MetaCreatorSchema, MetaItemSchema } from '@root/proto'
+import { MetaCreditSchema, MetaReferenceSchema, MetaSchema, MetaTextSchema, MetaUnknownSchema } from '@root/proto'
 
 import { create } from '@bufbuild/protobuf'
 
-type MetaContent = MetaItem['content']
-
-type MetaItemOf<C extends MetaCase> = MetaItem & { content: Extract<MetaContent, { case: C }> }
-
-type MetaValue = Exclude<MetaContent, { case: undefined }>['value']
-
 /**
- * Case discriminator of a populated meta value.
+ * Creates a Meta, the lyric metadata container.
  */
-export type MetaCase = Exclude<MetaContent['case'], undefined>
-
-/**
- * Creates a MetaCreator.
- */
-export const makeMetaCreator = (init?: MessageInitShape<typeof MetaCreatorSchema>): MetaCreator => {
-  return create(MetaCreatorSchema, init)
+export const makeMeta = (init?: MessageInitShape<typeof MetaSchema>): Meta => {
+  return create(MetaSchema, init)
 }
 
 /**
- * Creates a MetaItem; set its typed value through the `content` oneof.
+ * Creates a MetaText, a value optionally tagged with a language.
  */
-export const makeMetaItem = (init?: MessageInitShape<typeof MetaItemSchema>): MetaItem => {
-  return create(MetaItemSchema, init)
+export const makeMetaText = (init?: MessageInitShape<typeof MetaTextSchema>): MetaText => {
+  return create(MetaTextSchema, init)
 }
 
 /**
- * Whether any meta of a case exists.
+ * Creates a MetaCredit, a role with its credited names.
  */
-export const hasMeta = (metas: MetaItem[], kind: MetaCase): boolean => {
-  return metas.some((meta) => meta.content.case === kind)
+export const makeMetaCredit = (init?: MessageInitShape<typeof MetaCreditSchema>): MetaCredit => {
+  return create(MetaCreditSchema, init)
 }
 
 /**
- * All metas of a case.
+ * Creates a MetaUnknown, an unrecognized meta preserved by its original key.
  */
-export const getAllMeta = <C extends MetaCase>(metas: MetaItem[], kind: C): MetaItemOf<C>[] => {
-  return metas.filter((meta): meta is MetaItemOf<C> => meta.content.case === kind)
+export const makeMetaUnknown = (init?: MessageInitShape<typeof MetaUnknownSchema>): MetaUnknown => {
+  return create(MetaUnknownSchema, init)
 }
 
 /**
- * First meta of a case.
+ * Creates a MetaReference, a platform and its identifiers.
  */
-export const getFirstMeta = <C extends MetaCase>(metas: MetaItem[], kind: C): MetaItemOf<C> | undefined => {
-  return metas.find((meta): meta is MetaItemOf<C> => meta.content.case === kind)
+export const makeMetaReference = (init?: MessageInitShape<typeof MetaReferenceSchema>): MetaReference => {
+  return create(MetaReferenceSchema, init)
 }
 
 /**
- * Typed value of a meta, undefined when empty.
+ * Text of a localized meta list, preferring a language match.
  */
-export const getMetaValue = (meta: MetaItem): MetaValue | undefined => {
-  return meta.content.value
+export const getMetaText = (items: MetaText[], language?: string): string | undefined => {
+  if (language !== undefined) {
+    const matched = items.find((item) => item.language === language)
+    if (matched) {
+      return matched.value
+    }
+  }
+  return items[0]?.value
 }
 
 /**
- * All metas with the given original key.
+ * Unrecognized meta values carrying the given original key.
  */
-export const getMetaByKey = (metas: MetaItem[], key: string): MetaItem[] => {
-  return metas.filter((meta) => meta.key === key)
+export const getMetaUnknown = (unknowns: MetaUnknown[], key: string): string[] => {
+  return unknowns.filter((item) => item.key === key).map((item) => item.value)
+}
+
+/**
+ * Reference ids for the given platform.
+ */
+export const getMetaReference = (references: MetaReference[], platform: string): string[] => {
+  return references.find((item) => item.platform === platform)?.ids ?? []
 }

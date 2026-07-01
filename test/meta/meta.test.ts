@@ -1,30 +1,41 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
-import { getAllMeta, getFirstMeta, getMetaValue, hasMeta, makeMetaItem, getMetaByKey } from '@root/meta'
+import { getMetaReference, getMetaText, getMetaUnknown, makeMeta, makeMetaCredit, makeMetaReference, makeMetaText, makeMetaUnknown } from '@root/meta'
 
-const metas = [
-  makeMetaItem({ key: 'ti', content: { case: 'title', value: 'Song' } }),
-  makeMetaItem({ key: 'ar', content: { case: 'singer', value: 'Alice' } }),
-  makeMetaItem({ key: 'ar', content: { case: 'singer', value: 'Bob' } }),
-  makeMetaItem({ key: 'offset', content: { case: 'offset', value: 120 } }),
-]
-
-test('hasMeta checks presence by case', () => {
-  assert.equal(hasMeta(metas, 'title'), true)
-  assert.equal(hasMeta(metas, 'album'), false)
+const meta = makeMeta({
+  titles: [makeMetaText({ value: 'Song' }), makeMetaText({ language: 'ja', value: '歌' })],
+  artists: [makeMetaText({ value: 'Alice' }), makeMetaText({ value: 'Bob' })],
+  offset: 120,
+  duration: 200000,
+  isrcs: ['US1234567890'],
+  credits: [makeMetaCredit({ role: 'lyricist', names: [makeMetaText({ value: 'Carol' })] })],
+  unknowns: [makeMetaUnknown({ key: 'x', value: 'foo' }), makeMetaUnknown({ key: 'x', value: 'bar' })],
+  references: [makeMetaReference({ platform: 'apple', ids: ['1', '2'] })],
 })
 
-test('getFirstMeta and getMetaValue read the typed value', () => {
-  assert.equal(getMetaValue(getFirstMeta(metas, 'title')!), 'Song')
-  assert.equal(getMetaValue(getFirstMeta(metas, 'offset')!), 120)
-  assert.equal(getFirstMeta(metas, 'album'), undefined)
+test('typed fields are read directly', () => {
+  assert.equal(meta.titles.length, 2)
+  assert.equal(meta.artists.length, 2)
+  assert.equal(meta.offset, 120)
+  assert.equal(meta.duration, 200000)
+  assert.equal(meta.isrcs[0], 'US1234567890')
+  assert.equal(meta.credits[0].names[0].value, 'Carol')
 })
 
-test('getAllMeta returns every entry of a case', () => {
-  assert.equal(getAllMeta(metas, 'singer').length, 2)
+test('getMetaText prefers a language match then falls back', () => {
+  assert.equal(getMetaText(meta.titles, 'ja'), '歌')
+  assert.equal(getMetaText(meta.titles), 'Song')
+  assert.equal(getMetaText(meta.titles, 'ko'), 'Song')
+  assert.equal(getMetaText([]), undefined)
 })
 
-test('getMetaByKey groups by original key', () => {
-  assert.equal(getMetaByKey(metas, 'ar').length, 2)
+test('getMetaUnknown groups raw values by key', () => {
+  assert.deepEqual(getMetaUnknown(meta.unknowns, 'x'), ['foo', 'bar'])
+  assert.deepEqual(getMetaUnknown(meta.unknowns, 'none'), [])
+})
+
+test('getMetaReference reads ids for a platform', () => {
+  assert.deepEqual(getMetaReference(meta.references, 'apple'), ['1', '2'])
+  assert.deepEqual(getMetaReference(meta.references, 'spotify'), [])
 })
