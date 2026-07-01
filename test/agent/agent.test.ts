@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
 import { AgentType } from '@root/proto'
-import { getAgentById, getAgentLineCounts, getLineAgent, getPrimaryAgent, makeAgentItem, makeLineAgent } from '@root/agent'
+import { getAgentById, getAgentLineCounts, getAgentsByType, getLineAgent, getPrimaryAgent, hasAgent, makeAgentItem, makeLineAgent } from '@root/agent'
 import { makeInfo } from '@root/info'
 import { makeLineInterlude, makeLineNormal } from '@root/line'
 
@@ -45,4 +45,11 @@ test('getPrimaryAgent picks the most lines', () => {
   })
   assert.equal(getPrimaryAgent(info)?.id, 'a2')
   assert.equal(getPrimaryAgent(makeInfo()), undefined)
+})
+
+test('hasAgent and getAgentsByType filter by type', () => {
+  assert.equal(hasAgent(agents, AgentType.GROUP), true)
+  assert.equal(hasAgent(agents, AgentType.OTHER), false)
+  assert.equal(getAgentsByType(agents, AgentType.PERSON).length, 1)
+  assert.equal(getAgentsByType(agents, AgentType.PERSON)[0].id, 'a1')
 })

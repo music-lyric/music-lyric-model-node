@@ -1,5 +1,5 @@
 import type { MessageInitShape } from '@bufbuild/protobuf'
-import type { AgentItem, Info, Line, LineAgent } from '@root/proto'
+import type { AgentItem, AgentType, Info, Line, LineAgent } from '@root/proto'
 
 import { AgentItemSchema, LineAgentSchema } from '@root/proto'
 
@@ -132,4 +132,18 @@ export const getPrimaryAgent = (info: Info): AgentItem | undefined => {
     }
   }
   return result
+}
+
+/**
+ * Whether any agent of a type exists.
+ */
+export const hasAgent = (agents: AgentItem[], type: AgentType): boolean => {
+  return agents.some(item => item.type === type)
+}
+
+/**
+ * All agents of a type.
+ */
+export const getAgentsByType = (agents: AgentItem[], type: AgentType): AgentItem[] => {
+  return agents.filter(item => item.type === type)
 }
