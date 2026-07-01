@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
 import { AgentType } from '@root/proto'
-import { getAgentById, getAgentLineCounts, getAgentsByType, getLineAgent, getPrimaryAgent, hasAgent, makeAgentItem, makeLineAgent } from '@root/agent'
+import { getAgentById, getAgentLineCounts, getAgentsByType, getPrimaryAgent, hasAgent, makeAgentItem, makeLineAgent, resolveLineAgent } from '@root/agent'
 import { makeInfo } from '@root/info'
 import { makeLineInterlude, makeLineNormal } from '@root/line'
 
@@ -16,11 +16,11 @@ test('getAgentById finds the agent', () => {
   assert.equal(getAgentById(agents, 'none'), undefined)
 })
 
-test('getLineAgent resolves a line reference', () => {
+test('resolveLineAgent resolves a line reference', () => {
   const line = makeLineNormal({ content: { agent: makeLineAgent({ id: 'a2' }) } })
-  assert.equal(getLineAgent(line, agents)?.id, 'a2')
-  assert.equal(getLineAgent(makeLineNormal({}), agents), undefined)
-  assert.equal(getLineAgent(makeLineInterlude(), agents), undefined)
+  assert.equal(resolveLineAgent(line, agents)?.id, 'a2')
+  assert.equal(resolveLineAgent(makeLineNormal({}), agents), undefined)
+  assert.equal(resolveLineAgent(makeLineInterlude(), agents), undefined)
 })
 
 test('getAgentLineCounts counts lines per agent', () => {

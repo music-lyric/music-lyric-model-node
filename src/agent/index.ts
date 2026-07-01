@@ -45,7 +45,7 @@ export const getAgentById = (agents: AgentItem[], id: string): AgentItem | undef
 /**
  * Agent performing a line, resolved from its reference.
  */
-export const getLineAgent = (line: Line, agents: AgentItem[]): AgentItem | undefined => {
+export const resolveLineAgent = (line: Line, agents: AgentItem[]): AgentItem | undefined => {
   if (!isLineNormal(line)) {
     return undefined
   }
