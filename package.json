@@ -10,7 +10,8 @@
     "generate:proto": "buf generate proto",
     "generate:version": "tsx script/generate-proto-version.ts",
     "build": "vite build",
-    "test": "tsx --test \"test/**/*.test.ts\""
+    "test": "tsx --test \"test/**/*.test.ts\"",
+    "format": "prettier --write ."
   },
   "homepage": "https://github.com/music-lyric/music-lyric-model-node#readme",
   "bugs": {
@@ -40,6 +41,7 @@
   },
   "devDependencies": {
     "@types/node": "^25.9.4",
+    "prettier": "^3.9.4",
     "tsx": "^4.21.0",
     "typescript": "5.8.2",
     "vite": "^7.3.0",
