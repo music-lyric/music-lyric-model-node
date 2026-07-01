@@ -4,7 +4,7 @@ import type { Line, LineAnnotation, LineBackground, LineContent, LineInterlude, 
 import { LineBackgroundSchema, LineContentSchema, LineNormalSchema, LineSchema, TimeSchema } from '@root/proto'
 
 import { create } from '@bufbuild/protobuf'
-import { getTimeDuration } from '@root/common/time'
+import { getTimeDuration, isTimeActive } from '@root/common/time'
 import { getWordText } from '@root/word'
 
 /**
@@ -128,4 +128,24 @@ export const getLineLanguages = (line: Line): string[] => {
  */
 export const getLineAnnotation = (line: Line): LineAnnotation | undefined => {
   return getLineContent(line)?.annotation
+}
+
+/**
+ * Index of the line active at the given moment, or -1 when none.
+ */
+export const getActiveLineIndex = (lines: Line[], ms: number): number => {
+  for (let i = 0, len = lines.length; i < len; i++) {
+    if (isTimeActive(getLineTime(lines[i]), ms)) {
+      return i
+    }
+  }
+  return -1
+}
+
+/**
+ * Line active at the given moment, if any.
+ */
+export const getActiveLine = (lines: Line[], ms: number): Line | undefined => {
+  const index = getActiveLineIndex(lines, ms)
+  return index === -1 ? undefined : lines[index]
 }

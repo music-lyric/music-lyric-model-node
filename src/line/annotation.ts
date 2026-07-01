@@ -1,5 +1,14 @@
 import type { MessageInitShape } from '@bufbuild/protobuf'
-import type { Line, LineAnnotation, LineAnnotationRoman, LineAnnotationTranslate, LineAnnotationUnknown, Word, WordAnnotationContent, WordNormal } from '@root/proto'
+import type {
+  Line,
+  LineAnnotation,
+  LineAnnotationRoman,
+  LineAnnotationTranslate,
+  LineAnnotationUnknown,
+  Word,
+  WordAnnotationContent,
+  WordNormal,
+} from '@root/proto'
 
 import { LineAnnotationRomanSchema, LineAnnotationSchema, LineAnnotationTranslateSchema, LineAnnotationUnknownSchema } from '@root/proto'
 
@@ -40,7 +49,7 @@ export const makeLineAnnotation = (init?: MessageInitShape<typeof LineAnnotation
  */
 export const getFirstAnnotation = <T extends { language?: string }>(items: T[], language?: string): T | undefined => {
   if (language !== undefined) {
-    const matched = items.find(item => item.language === language)
+    const matched = items.find((item) => item.language === language)
     if (matched) {
       return matched
     }
@@ -110,7 +119,7 @@ const aggregate = <T extends { language?: string; words: WordAnnotationContent[]
       if (word.body.case !== 'normal') {
         continue
       }
-      const item = collect(word.body.value)?.find(entry => groupOf(entry) === group)
+      const item = collect(word.body.value)?.find((entry) => groupOf(entry) === group)
       if (item) {
         if (has) {
           content += ' '.repeat(pending)
@@ -134,8 +143,8 @@ const aggregate = <T extends { language?: string; words: WordAnnotationContent[]
 export const deriveLineRomans = (words: Word[]): LineAnnotationRoman[] => {
   return aggregate(
     words,
-    word => word.annotation?.romans,
-    item => item.language ?? '',
+    (word) => word.annotation?.romans,
+    (item) => item.language ?? '',
     (_group, content, language) => makeLineAnnotationRoman({ language, content, derived: true }),
   )
 }
@@ -146,8 +155,8 @@ export const deriveLineRomans = (words: Word[]): LineAnnotationRoman[] => {
 export const deriveLineTranslates = (words: Word[]): LineAnnotationTranslate[] => {
   return aggregate(
     words,
-    word => word.annotation?.translates,
-    item => item.language ?? '',
+    (word) => word.annotation?.translates,
+    (item) => item.language ?? '',
     (_group, content, language) => makeLineAnnotationTranslate({ language, content, derived: true }),
   )
 }
@@ -158,8 +167,8 @@ export const deriveLineTranslates = (words: Word[]): LineAnnotationTranslate[] =
 export const deriveLineUnknowns = (words: Word[]): LineAnnotationUnknown[] => {
   return aggregate(
     words,
-    word => word.annotation?.unknowns,
-    item => item.key,
+    (word) => word.annotation?.unknowns,
+    (item) => item.key,
     (group, content, language) => makeLineAnnotationUnknown({ key: group, language, content, derived: true }),
   )
 }

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
-import { getWordRuby, getWordText, getWordTime, isWordNormal, isWordSpace, makeWordNormal, makeWordSpace, makeWordAnnotation, makeWordAnnotationContent, makeWordAnnotationRuby } from '@root/word'
+import { getActiveWord, getActiveWordIndex, getWordDuration, getWordRuby, getWordText, getWordTime, isWordNormal, isWordSpace, makeWordNormal, makeWordSpace, makeWordAnnotation, makeWordAnnotationContent, makeWordAnnotationRuby } from '@root/word'
 
 test('guards narrow the word body', () => {
   const normal = makeWordNormal({ content: 'hi' })
@@ -26,4 +26,18 @@ test('getWordRuby reads the ruby annotation', () => {
   const word = makeWordNormal({ content: '漢', annotation: makeWordAnnotation({ ruby }) })
   assert.equal(getWordRuby(word)?.words[0].content, 'かん')
   assert.equal(getWordRuby(makeWordNormal({ content: 'a' })), undefined)
+})
+
+test('getWordDuration reads the word time span', () => {
+  assert.equal(getWordDuration(makeWordNormal({ time: { start: 10, end: 30 } })), 20)
+  assert.equal(getWordDuration(makeWordSpace({ count: 1 })), 0)
+})
+
+test('getActiveWord finds the word at a moment', () => {
+  const words = [makeWordNormal({ content: 'a', time: { start: 0, end: 100 } }), makeWordNormal({ content: 'b', time: { start: 100, end: 200 } })]
+  assert.equal(getActiveWordIndex(words, 150), 1)
+  const active = getActiveWord(words, 50)
+  assert.equal(active && getWordText(active), 'a')
+  assert.equal(getActiveWordIndex(words, 500), -1)
+  assert.equal(getActiveWord(words, 500), undefined)
 })

@@ -2,6 +2,8 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
 import {
+  getActiveLine,
+  getActiveLineIndex,
   getLineAnnotation,
   getLineDuration,
   getLineLanguages,
@@ -62,4 +64,12 @@ test('languages fall back to those of the words', () => {
 test('getLineAnnotation is absent on an interlude', () => {
   assert.ok(getLineAnnotation(normal))
   assert.equal(getLineAnnotation(interlude), undefined)
+})
+
+test('getActiveLine finds the line at a moment', () => {
+  const lines = [normal, interlude]
+  assert.equal(getActiveLineIndex(lines, 1500), 0)
+  assert.equal(getActiveLineIndex(lines, 2500), 1)
+  assert.equal(getActiveLineIndex(lines, 5000), -1)
+  assert.equal(getActiveLine(lines, 2500), interlude)
 })
