@@ -13,17 +13,17 @@ npm install music-lyric-model
 ```
 
 ```ts
-import { makeInfo, encodeInfo, decodeInfo, infoToJson, infoFromJson, InfoType } from 'music-lyric-model'
+import { Runtime, Storage, Common } from 'music-lyric-model'
 
-// makeInfo stamps the current SCHEMA_VERSION.
-const info = makeInfo()
-info.type = InfoType.NORMAL
+// Runtime — the parse output.
+const info = Runtime.makeInfo({ timing: Common.Timing.WORD }) // stamps the current SCHEMA_VERSION
+const bytes = Runtime.encodeInfo(info) // Uint8Array
+const json = Runtime.infoToJson(info) // JSON
+const back = Runtime.decodeInfo(bytes)
 
-const bytes = encodeInfo(info) // Uint8Array
-const json = infoToJson(info) // JSON
-
-const fromBytes = decodeInfo(bytes)
-const fromJson = infoFromJson(json)
+// Storage — the persistence model.
+const lyric = Storage.makeLyric()
+const stored = Storage.encodeLyric(lyric)
 ```
 
 ## Build

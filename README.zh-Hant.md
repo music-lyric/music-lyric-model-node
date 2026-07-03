@@ -13,17 +13,17 @@ npm install music-lyric-model
 ```
 
 ```ts
-import { makeInfo, encodeInfo, decodeInfo, infoToJson, infoFromJson, InfoType } from 'music-lyric-model'
+import { Runtime, Storage, Common } from 'music-lyric-model'
 
-// makeInfo 會蓋上當前的 SCHEMA_VERSION.
-const info = makeInfo()
-info.type = InfoType.NORMAL
+// Runtime —— 解析產物.
+const info = Runtime.makeInfo({ timing: Common.Timing.WORD }) // 會蓋上當前的 SCHEMA_VERSION
+const bytes = Runtime.encodeInfo(info) // Uint8Array
+const json = Runtime.infoToJson(info) // JSON
+const back = Runtime.decodeInfo(bytes)
 
-const bytes = encodeInfo(info) // Uint8Array
-const json = infoToJson(info) // JSON
-
-const fromBytes = decodeInfo(bytes)
-const fromJson = infoFromJson(json)
+// Storage —— 儲存模型.
+const lyric = Storage.makeLyric()
+const stored = Storage.encodeLyric(lyric)
 ```
 
 ## 建置
