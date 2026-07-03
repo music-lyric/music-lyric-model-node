@@ -1,10 +1,11 @@
 import type { MessageInitShape } from '@bufbuild/protobuf'
-import type { AgentItem, AgentType, Info, Line, LineAgent } from '@root/proto'
+import type { AgentType } from '@root/common/proto'
+import type { AgentItem, Info, Line, LineAgent } from '@root/runtime/proto'
 
-import { AgentItemSchema, LineAgentSchema } from '@root/proto'
+import { AgentItemSchema, LineAgentSchema } from '@root/runtime/proto'
 
 import { create } from '@bufbuild/protobuf'
-import { isLineNormal } from '@root/line'
+import { isLineNormal } from '@root/runtime/line'
 
 /**
  * Occurrence index of a line's performing agent, computed from the current line order.

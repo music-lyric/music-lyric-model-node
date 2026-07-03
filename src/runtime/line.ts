@@ -1,4 +1,5 @@
 import type { MessageInitShape } from '@bufbuild/protobuf'
+import type { Time } from '@root/common/proto'
 import type {
   Line,
   LineAnnotation,
@@ -9,12 +10,11 @@ import type {
   LineContent,
   LineInterlude,
   LineNormal,
-  Time,
   Word,
-  WordAnnotationContent,
   WordNormal,
-} from '@root/proto'
+} from '@root/runtime/proto'
 
+import { TimeSchema } from '@root/common/proto'
 import {
   LineAnnotationRomanSchema,
   LineAnnotationSchema,
@@ -24,12 +24,11 @@ import {
   LineContentSchema,
   LineNormalSchema,
   LineSchema,
-  TimeSchema,
-} from '@root/proto'
+} from '@root/runtime/proto'
 
 import { create } from '@bufbuild/protobuf'
 import { getTimeDuration, isTimeActive } from '@root/common'
-import { getWordAnnotationText, getWordText } from '@root/word'
+import { getWordAnnotationText, getWordText } from '@root/runtime/word'
 
 /**
  * Creates a LineContent, the sung content shared by normal and background lines.
@@ -234,14 +233,16 @@ export const isLineInterlude = (line: Line): line is Line & { body: { case: 'int
 /**
  * Aggregate per-word annotations into line items, one per distinct group.
  *
- * `collect` selects a word's annotation tokens, `groupOf` names each token's group, `make` builds the line item.
+ * `collect` selects a word's annotations, `groupOf` names each item's group, `textOf` and `languageOf` read its text and language, `make` builds the line item.
  *
- * Tokens are joined in word order with spaces padded to follow word spacing; groups keep first-seen order.
+ * Text is joined in word order with spaces padded to follow word spacing; groups keep first-seen order.
  */
-const aggregate = <T extends { language?: string; words: WordAnnotationContent[] }, R>(
+const aggregate = <T, R>(
   words: Word[],
   collect: (word: WordNormal) => T[] | undefined,
   groupOf: (item: T) => string,
+  textOf: (item: T) => string,
+  languageOf: (item: T) => string | undefined,
   make: (group: string, content: string, language: string | undefined) => R,
 ): R[] => {
   const groups: string[] = []
@@ -282,8 +283,8 @@ const aggregate = <T extends { language?: string; words: WordAnnotationContent[]
         if (has) {
           content += ' '.repeat(pending)
         }
-        content += getWordAnnotationText(item)
-        language ??= item.language
+        content += textOf(item)
+        language ??= languageOf(item)
         pending = 0
         has = true
       }
@@ -303,6 +304,8 @@ export const deriveLineRomans = (words: Word[]): LineAnnotationRoman[] => {
     words,
     (word) => word.annotation?.romans,
     (item) => item.language ?? '',
+    (item) => getWordAnnotationText(item),
+    (item) => item.language,
     (_group, content, language) => makeLineAnnotationRoman({ language, content, derived: true }),
   )
 }
@@ -315,6 +318,8 @@ export const deriveLineTranslates = (words: Word[]): LineAnnotationTranslate[] =
     words,
     (word) => word.annotation?.translates,
     (item) => item.language ?? '',
+    (item) => item.content,
+    (item) => item.language,
     (_group, content, language) => makeLineAnnotationTranslate({ language, content, derived: true }),
   )
 }
@@ -327,7 +332,9 @@ export const deriveLineUnknowns = (words: Word[]): LineAnnotationUnknown[] => {
     words,
     (word) => word.annotation?.unknowns,
     (item) => item.key,
-    (group, content, language) => makeLineAnnotationUnknown({ key: group, language, content, derived: true }),
+    (item) => item.value,
+    () => undefined,
+    (group, content) => makeLineAnnotationUnknown({ key: group, value: content, derived: true }),
   )
 }
 

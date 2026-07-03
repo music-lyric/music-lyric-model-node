@@ -1,11 +1,11 @@
 import type { JsonValue, MessageInitShape } from '@bufbuild/protobuf'
-import type { Info } from '@root/proto'
+import type { Info } from '@root/runtime/proto'
 
 import { SCHEMA_VERSION } from '@root/version'
-import { InfoSchema } from '@root/proto'
+import { InfoSchema } from '@root/runtime/proto'
 
 import { create, fromBinary, fromJson, toBinary, toJson } from '@bufbuild/protobuf'
-import { getLineTime, isLineNormal } from '@root/line'
+import { getLineTime, isLineNormal } from '@root/runtime/line'
 
 /**
  * Creates an Info, stamping the current SCHEMA_VERSION.

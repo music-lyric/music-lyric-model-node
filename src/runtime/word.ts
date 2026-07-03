@@ -1,6 +1,6 @@
 import type { MessageInitShape } from '@bufbuild/protobuf'
+import type { Time } from '@root/common/proto'
 import type {
-  Time,
   Word,
   WordAnnotation,
   WordAnnotationContent,
@@ -10,7 +10,7 @@ import type {
   WordAnnotationUnknown,
   WordNormal,
   WordSpace,
-} from '@root/proto'
+} from '@root/runtime/proto'
 
 import {
   WordAnnotationContentSchema,
@@ -22,7 +22,7 @@ import {
   WordNormalSchema,
   WordSchema,
   WordSpaceSchema,
-} from '@root/proto'
+} from '@root/runtime/proto'
 
 import { create } from '@bufbuild/protobuf'
 import { getTimeDuration, isTimeActive } from '@root/common'

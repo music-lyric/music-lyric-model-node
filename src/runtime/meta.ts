@@ -1,7 +1,7 @@
 import type { MessageInitShape } from '@bufbuild/protobuf'
-import type { Meta, MetaCredit, MetaReference, MetaText, MetaUnknown } from '@root/proto'
+import type { Meta, MetaCredit, MetaReference, MetaText, MetaUnknown } from '@root/runtime/proto'
 
-import { MetaCreditSchema, MetaReferenceSchema, MetaSchema, MetaTextSchema, MetaUnknownSchema } from '@root/proto'
+import { MetaCreditSchema, MetaReferenceSchema, MetaSchema, MetaTextSchema, MetaUnknownSchema } from '@root/runtime/proto'
 
 import { create } from '@bufbuild/protobuf'
 
@@ -47,10 +47,10 @@ export const getMetaText = (items: MetaText[], language?: string): string | unde
   if (language !== undefined) {
     const matched = items.find((item) => item.language === language)
     if (matched) {
-      return matched.value
+      return matched.content
     }
   }
-  return items[0]?.value
+  return items[0]?.content
 }
 
 /**

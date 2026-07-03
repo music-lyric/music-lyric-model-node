@@ -1,7 +1,7 @@
 import type { MessageInitShape } from '@bufbuild/protobuf'
-import type { LanguageItem } from '@root/proto'
+import type { LanguageItem } from '@root/runtime/proto'
 
-import { LanguageItemSchema } from '@root/proto'
+import { LanguageItemSchema } from '@root/runtime/proto'
 
 import { create } from '@bufbuild/protobuf'
 

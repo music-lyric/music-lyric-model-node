@@ -1,7 +1,7 @@
 import type { MessageInitShape } from '@bufbuild/protobuf'
-import type { Time } from '@root/proto'
+import type { Time } from '@root/common/proto'
 
-import { TimeSchema } from '@root/proto'
+import { TimeSchema } from '@root/common/proto'
 
 import { create } from '@bufbuild/protobuf'
 
