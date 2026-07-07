@@ -2,7 +2,7 @@
   "compilerOptions": {
     "declaration": true,
     "emitDeclarationOnly": true,
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "lib": ["ESNext"],
     "module": "esnext",
     "moduleResolution": "bundler",
     "removeComments": false,
