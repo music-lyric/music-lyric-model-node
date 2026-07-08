@@ -16,7 +16,7 @@ npm install music-lyric-model
 import { Runtime, Storage, Common } from 'music-lyric-model'
 
 // Runtime — the parse output.
-const info = Runtime.makeInfo({ timing: Common.Timing.WORD }) // stamps the current SCHEMA_VERSION
+const info = Runtime.makeInfo({ timing: Common.Proto.Timing.WORD }) // stamps the current SCHEMA_VERSION
 const bytes = Runtime.encodeInfo(info) // Uint8Array
 const json = Runtime.infoToJson(info) // JSON
 const back = Runtime.decodeInfo(bytes)

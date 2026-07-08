@@ -16,7 +16,7 @@ npm install music-lyric-model
 import { Runtime, Storage, Common } from 'music-lyric-model'
 
 // Runtime —— 解析产物.
-const info = Runtime.makeInfo({ timing: Common.Timing.WORD }) // 会盖上当前的 SCHEMA_VERSION
+const info = Runtime.makeInfo({ timing: Common.Proto.Timing.WORD }) // 会盖上当前的 SCHEMA_VERSION
 const bytes = Runtime.encodeInfo(info) // Uint8Array
 const json = Runtime.infoToJson(info) // JSON
 const back = Runtime.decodeInfo(bytes)

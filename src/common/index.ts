@@ -1,3 +1,3 @@
-export * from './proto'
+export * as Proto from './proto'
 
 export * from './time'
