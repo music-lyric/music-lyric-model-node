@@ -47,7 +47,6 @@
     "rollup-plugin-dts": "^6.4.1",
     "tsx": "^4.21.0",
     "typescript": "5.8.2",
-    "vite": "^7.3.0",
-    "vite-plugin-dts": "^4.5.4"
+    "vite": "^7.3.0"
   }
 }
