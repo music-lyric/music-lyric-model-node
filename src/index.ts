@@ -4,4 +4,6 @@ import * as StorageModel from './storage'
 
 export { CommonModel as Common, RuntimeModel as Runtime, StorageModel as Storage }
 
+export * from './convert'
+
 export * from './version'
