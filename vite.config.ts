@@ -1,5 +1,3 @@
-import PluginDts from 'vite-plugin-dts'
-
 import { join } from 'node:path'
 import { defineConfig } from 'vite'
 
@@ -34,5 +32,4 @@ export default defineConfig({
       '@gen': join(root, 'gen'),
     },
   },
-  plugins: [PluginDts({ rollupTypes: true })],
 })
