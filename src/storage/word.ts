@@ -98,9 +98,14 @@ export const getWordText = (word: Word): string => {
 
 /**
  * Time range of a word, if any.
+ *
+ * Accepts either the Word wrapper or a bare WordNormal.
  */
-export const getWordTime = (word: Word): Time | undefined => {
-  return word.body.case === 'normal' ? word.body.value.time : undefined
+export const getWordTime = (word: Word | WordNormal): Time | undefined => {
+  if ('body' in word) {
+    return word.body.case === 'normal' ? word.body.value.time : undefined
+  }
+  return word.time
 }
 
 /**
@@ -112,8 +117,10 @@ export const getWordRuby = (word: Word): WordAnnotationRuby | undefined => {
 
 /**
  * Duration of a word in milliseconds.
+ *
+ * Accepts either the Word wrapper or a bare WordNormal.
  */
-export const getWordDuration = (word: Word): number => {
+export const getWordDuration = (word: Word | WordNormal): number => {
   return getTimeDuration(getWordTime(word))
 }
 
@@ -160,4 +167,18 @@ export const isWordNormal = (word: Word): word is Word & { body: { case: 'normal
  */
 export const isWordSpace = (word: Word): word is Word & { body: { case: 'space'; value: WordSpace } } => {
   return word.body.case === 'space'
+}
+
+/**
+ * Returns the normal word if the Word holds one, otherwise undefined.
+ */
+export const asWordNormal = (word: Word): WordNormal | undefined => {
+  return isWordNormal(word) ? word.body.value : undefined
+}
+
+/**
+ * Returns the space run if the Word holds one, otherwise undefined.
+ */
+export const asWordSpace = (word: Word): WordSpace | undefined => {
+  return isWordSpace(word) ? word.body.value : undefined
 }

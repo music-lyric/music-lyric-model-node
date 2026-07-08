@@ -21,6 +21,14 @@ const bytes = Runtime.encodeInfo(info) // Uint8Array
 const json = Runtime.infoToJson(info) // JSON
 const back = Runtime.decodeInfo(bytes)
 
+// 安全解包 oneof 变体, 无需手写 guard.
+const normal = Runtime.asLineNormal(back.lines[0]) // LineNormal | undefined
+
+// getWord* 同时接受 Word 容器或裸 WordNormal.
+const word = Runtime.getLineWords(back.lines[0])[0]
+Runtime.getWordDuration(word) // Word
+Runtime.getWordDuration(Runtime.asWordNormal(word)!) // WordNormal
+
 // Storage —— 存储模型.
 const lyric = Storage.makeLyric()
 const stored = Storage.encodeLyric(lyric)

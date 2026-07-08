@@ -21,6 +21,14 @@ const bytes = Runtime.encodeInfo(info) // Uint8Array
 const json = Runtime.infoToJson(info) // JSON
 const back = Runtime.decodeInfo(bytes)
 
+// Safe oneof unwrap, no hand-written guard.
+const normal = Runtime.asLineNormal(back.lines[0]) // LineNormal | undefined
+
+// getWord* accept either the Word wrapper or a bare WordNormal.
+const word = Runtime.getLineWords(back.lines[0])[0]
+Runtime.getWordDuration(word) // Word
+Runtime.getWordDuration(Runtime.asWordNormal(word)!) // WordNormal
+
 // Storage — the persistence model.
 const lyric = Storage.makeLyric()
 const stored = Storage.encodeLyric(lyric)

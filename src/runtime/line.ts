@@ -231,6 +231,20 @@ export const isLineInterlude = (line: Line): line is Line & { body: { case: 'int
 }
 
 /**
+ * Returns the normal line if the Line holds one, otherwise undefined.
+ */
+export const asLineNormal = (line: Line): LineNormal | undefined => {
+  return isLineNormal(line) ? line.body.value : undefined
+}
+
+/**
+ * Returns the interlude if the Line holds one, otherwise undefined.
+ */
+export const asLineInterlude = (line: Line): LineInterlude | undefined => {
+  return isLineInterlude(line) ? line.body.value : undefined
+}
+
+/**
  * Aggregate per-word annotations into line items, one per distinct group.
  *
  * `collect` selects a word's annotations, `groupOf` names each item's group, `textOf` and `languageOf` read its text and language, `make` builds the line item.
