@@ -12,27 +12,57 @@
 npm install music-lyric-model
 ```
 
+### 根入口
+
+包根会 re-export `common`、`parsed`、`storage` 的全部内容:
+
 ```ts
-import { Runtime, Storage, Common } from 'music-lyric-model'
+import {
+  Timing,
+  asParsedLineNormal,
+  asWordNormal,
+  encodeParsedInfo,
+  getParsedLineText,
+  getParsedLineWords,
+  getWordDuration,
+  makeParsedInfo,
+  makeStorageLyric,
+  makeWordNormal,
+} from 'music-lyric-model'
 
-// Runtime —— 解析产物.
-const info = Runtime.makeInfo({ timing: Common.Proto.Timing.WORD }) // 会盖上当前的 SCHEMA_VERSION
-const bytes = Runtime.encodeInfo(info) // Uint8Array
-const json = Runtime.infoToJson(info) // JSON
-const back = Runtime.decodeInfo(bytes)
+// Parsed
+const info = makeParsedInfo({ timing: Timing.WORD })
+const bytes = encodeParsedInfo(info)
 
-// 安全解包 oneof 变体, 无需手写 guard.
-const normal = Runtime.asLineNormal(back.lines[0]) // LineNormal | undefined
+const normal = asParsedLineNormal(info.lines[0])
+const word = getParsedLineWords(info.lines[0])[0]
+getWordDuration(word) // Word 容器
+getWordDuration(asWordNormal(word)!) // 裸 WordNormal
 
-// getWord* 同时接受 Word 容器或裸 WordNormal.
-const word = Runtime.getLineWords(back.lines[0])[0]
-Runtime.getWordDuration(word) // Word
-Runtime.getWordDuration(Runtime.asWordNormal(word)!) // WordNormal
-
-// Storage —— 存储模型.
-const lyric = Storage.makeLyric()
-const stored = Storage.encodeLyric(lyric)
+// Storage
+const lyric = makeStorageLyric({ timing: Timing.WORD })
 ```
+
+### 子路径
+
+| 导入                        | 作用     |
+| --------------------------- | -------- |
+| `music-lyric-model/common`  | 共享原语 |
+| `music-lyric-model/parsed`  | 解析产物 |
+| `music-lyric-model/storage` | 持久化   |
+
+```ts
+// 共享
+import { Timing, makeTime, makeWordNormal, getWordsText } from 'music-lyric-model/common'
+
+// Parsed
+import { makeParsedInfo, encodeParsedInfo, asParsedLineNormal, getParsedLineText, isParsedInfoValid } from 'music-lyric-model/parsed'
+
+// Storage
+import { makeStorageLyric, encodeStorageLyric, getStorageLineText, resolveLineAgents } from 'music-lyric-model/storage'
+```
+
+`parsed` 与 `storage` 会依赖 `common` 的共享类型与 helper, 但互不 re-export. 跨模型时请同时 import 两个子路径 (或直接用根入口).
 
 ## 构建
 
@@ -53,10 +83,10 @@ npm run build
 
 ### 生成
 
-从 proto submodule 重新生成 `gen/` (需要 `buf`):
+从 proto submodule 重新生成 `gen` (需要 `buf`):
 
 ```bash
-git submodule update --init --recursive   # 拉取 proto/
+git submodule update --init --recursive
 npm run generate
 ```
 

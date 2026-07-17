@@ -12,27 +12,57 @@ Install from npm:
 npm install music-lyric-model
 ```
 
+### Root entry
+
+The package root re-exports everything from `common`, `parsed`, and `storage`:
+
 ```ts
-import { Runtime, Storage, Common } from 'music-lyric-model'
+import {
+  Timing,
+  asParsedLineNormal,
+  asWordNormal,
+  encodeParsedInfo,
+  getParsedLineText,
+  getParsedLineWords,
+  getWordDuration,
+  makeParsedInfo,
+  makeStorageLyric,
+  makeWordNormal,
+} from 'music-lyric-model'
 
-// Runtime — the parse output.
-const info = Runtime.makeInfo({ timing: Common.Proto.Timing.WORD }) // stamps the current SCHEMA_VERSION
-const bytes = Runtime.encodeInfo(info) // Uint8Array
-const json = Runtime.infoToJson(info) // JSON
-const back = Runtime.decodeInfo(bytes)
+// Parsed
+const info = makeParsedInfo({ timing: Timing.WORD })
+const bytes = encodeParsedInfo(info)
 
-// Safe oneof unwrap, no hand-written guard.
-const normal = Runtime.asLineNormal(back.lines[0]) // LineNormal | undefined
+const normal = asParsedLineNormal(info.lines[0])
+const word = getParsedLineWords(info.lines[0])[0]
+getWordDuration(word) // Word wrapper
+getWordDuration(asWordNormal(word)!) // bare WordNormal
 
-// getWord* accept either the Word wrapper or a bare WordNormal.
-const word = Runtime.getLineWords(back.lines[0])[0]
-Runtime.getWordDuration(word) // Word
-Runtime.getWordDuration(Runtime.asWordNormal(word)!) // WordNormal
-
-// Storage — the persistence model.
-const lyric = Storage.makeLyric()
-const stored = Storage.encodeLyric(lyric)
+// Storage
+const lyric = makeStorageLyric({ timing: Timing.WORD })
 ```
+
+### Subpaths
+
+| Import                      | Role              |
+| --------------------------- | ----------------- |
+| `music-lyric-model/common`  | Shared primitives |
+| `music-lyric-model/parsed`  | Parse output      |
+| `music-lyric-model/storage` | Persistence       |
+
+```ts
+// Shared
+import { Timing, makeTime, makeWordNormal, getWordsText } from 'music-lyric-model/common'
+
+// Parsed
+import { makeParsedInfo, encodeParsedInfo, asParsedLineNormal, getParsedLineText, isParsedInfoValid } from 'music-lyric-model/parsed'
+
+// Storage
+import { makeStorageLyric, encodeStorageLyric, getStorageLineText, resolveLineAgents } from 'music-lyric-model/storage'
+```
+
+`parsed` and `storage` depend on `common` for shared types and helpers; they do not re-export each other. Import both subpaths (or the root) when you work across models.
 
 ## Build
 
@@ -53,10 +83,10 @@ npm run build
 
 ### Generate
 
-Regenerate `gen/` from the proto submodule (requires `buf`):
+Regenerate `gen` from the proto submodule (requires `buf`):
 
 ```bash
-git submodule update --init --recursive   # fetch proto/
+git submodule update --init --recursive
 npm run generate
 ```
 
