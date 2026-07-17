@@ -1,150 +1,110 @@
 import type { MessageInitShape } from '@bufbuild/protobuf'
 import type { Time } from '@root/common/proto'
-import type {
-  Line,
-  LineAnnotation,
-  LineAnnotationRoman,
-  LineAnnotationTranslate,
-  LineAnnotationUnknown,
-  LineContent,
-  Word,
-} from '@root/storage/proto'
+import type { Line, LineBackground } from '@root/storage/proto'
+import type { LineAnnotation, Word } from '@root/common/proto'
 
-import {
-  LineAnnotationRomanSchema,
-  LineAnnotationSchema,
-  LineAnnotationTranslateSchema,
-  LineAnnotationUnknownSchema,
-  LineContentSchema,
-  LineSchema,
-} from '@root/storage/proto'
+import { LineBackgroundSchema, LineSchema } from '@root/storage/proto'
 
 import { create } from '@bufbuild/protobuf'
-import { getTimeDuration, isTimeActive } from '@root/common'
-import { getWordText } from '@root/storage/word'
+import { getTimeDuration, getWordsText, isTimeActive } from '@root/common'
 
 /**
- * Creates a LineContent, the sung content shared by a line and its backgrounds.
+ * Creates a storage Line.
  */
-export const makeLineContent = (init?: MessageInitShape<typeof LineContentSchema>): LineContent => {
-  return create(LineContentSchema, init)
-}
-
-/**
- * Creates a Line.
- */
-export const makeLine = (init?: MessageInitShape<typeof LineSchema>): Line => {
+export const makeStorageLine = (init?: MessageInitShape<typeof LineSchema>): Line => {
   return create(LineSchema, init)
 }
 
 /**
- * Creates a LineAnnotationUnknown.
+ * Creates a storage LineBackground.
  */
-export const makeLineAnnotationUnknown = (init?: MessageInitShape<typeof LineAnnotationUnknownSchema>): LineAnnotationUnknown => {
-  return create(LineAnnotationUnknownSchema, init)
-}
-
-/**
- * Creates a LineAnnotationRoman.
- */
-export const makeLineAnnotationRoman = (init?: MessageInitShape<typeof LineAnnotationRomanSchema>): LineAnnotationRoman => {
-  return create(LineAnnotationRomanSchema, init)
-}
-
-/**
- * Creates a LineAnnotationTranslate.
- */
-export const makeLineAnnotationTranslate = (init?: MessageInitShape<typeof LineAnnotationTranslateSchema>): LineAnnotationTranslate => {
-  return create(LineAnnotationTranslateSchema, init)
-}
-
-/**
- * Creates a LineAnnotation, the per-line annotation container.
- */
-export const makeLineAnnotation = (init?: MessageInitShape<typeof LineAnnotationSchema>): LineAnnotation => {
-  return create(LineAnnotationSchema, init)
-}
-
-/**
- * Content of a line.
- */
-export const getLineContent = (line: Line): LineContent | undefined => {
-  return line.content
+export const makeStorageLineBackground = (
+  init?: MessageInitShape<typeof LineBackgroundSchema>,
+): LineBackground => {
+  return create(LineBackgroundSchema, init)
 }
 
 /**
  * Time range of a line.
  */
-export const getLineTime = (line: Line): Time | undefined => {
-  return line.content?.time
+export const getStorageLineTime = (line: Line): Time | undefined => {
+  return line.time
+}
+
+/**
+ * Time range of a background line.
+ */
+export const getStorageBackgroundTime = (background: LineBackground): Time | undefined => {
+  return background.time
 }
 
 /**
  * Duration of a line in milliseconds.
  */
-export const getLineDuration = (line: Line): number => {
-  return getTimeDuration(getLineTime(line))
+export const getStorageLineDuration = (line: Line): number => {
+  return getTimeDuration(getStorageLineTime(line))
 }
 
 /**
  * Words of a line.
  */
-export const getLineWords = (line: Line): Word[] => {
-  return line.content?.words ?? []
-}
-
-/**
- * Text joined from a list of words.
- */
-export const getWordsText = (words: Word[]): string => {
-  let result = ''
-  for (let i = 0, len = words.length; i < len; i++) {
-    result += getWordText(words[i])
-  }
-  return result
+export const getStorageLineWords = (line: Line): Word[] => {
+  return line.words
 }
 
 /**
  * Plain text of a line.
  */
-export const getLineText = (line: Line): string => {
-  return getWordsText(getLineWords(line))
+export const getStorageLineText = (line: Line): string => {
+  return getWordsText(line.words)
 }
 
 /**
- * Distinct language tags among a list of words.
+ * Plain text of a background line.
  */
-export const getWordsLanguages = (words: Word[]): string[] => {
-  const result = new Set<string>()
+export const getStorageBackgroundText = (background: LineBackground): string => {
+  return getWordsText(background.words)
+}
+
+/**
+ * Distinct language tags among a list of words, in first-seen order.
+ */
+export const getStorageWordsLanguages = (words: Word[]): string[] => {
+  const result: string[] = []
+  const seen = new Set<string>()
   for (let i = 0, len = words.length; i < len; i++) {
     const word = words[i]
     if (word.body.case === 'normal' && word.body.value.language) {
-      result.add(word.body.value.language)
+      const tag = word.body.value.language
+      if (!seen.has(tag)) {
+        seen.add(tag)
+        result.push(tag)
+      }
     }
   }
-  return [...result]
+  return result
 }
 
 /**
  * Languages of a line, collected from its words.
  */
-export const getLineLanguages = (line: Line): string[] => {
-  return getWordsLanguages(getLineWords(line))
+export const getStorageLineLanguages = (line: Line): string[] => {
+  return getStorageWordsLanguages(line.words)
 }
 
 /**
  * Annotation of a line.
  */
-export const getLineAnnotation = (line: Line): LineAnnotation | undefined => {
-  return line.content?.annotation
+export const getStorageLineAnnotation = (line: Line): LineAnnotation | undefined => {
+  return line.annotation
 }
 
 /**
  * Index of the line active at the given moment, or -1 when none.
  */
-export const getActiveLineIndex = (lines: Line[], ms: number): number => {
+export const getStorageActiveLineIndex = (lines: Line[], ms: number): number => {
   for (let i = 0, len = lines.length; i < len; i++) {
-    if (isTimeActive(getLineTime(lines[i]), ms)) {
+    if (isTimeActive(getStorageLineTime(lines[i]), ms)) {
       return i
     }
   }
@@ -154,15 +114,18 @@ export const getActiveLineIndex = (lines: Line[], ms: number): number => {
 /**
  * Line active at the given moment, if any.
  */
-export const getActiveLine = (lines: Line[], ms: number): Line | undefined => {
-  const index = getActiveLineIndex(lines, ms)
+export const getStorageActiveLine = (lines: Line[], ms: number): Line | undefined => {
+  const index = getStorageActiveLineIndex(lines, ms)
   return index === -1 ? undefined : lines[index]
 }
 
 /**
  * First annotation item, preferring a language match.
  */
-export const getFirstAnnotation = <T extends { language?: string }>(items: T[], language?: string): T | undefined => {
+export const getStorageFirstAnnotation = <T extends { language?: string }>(
+  items: T[],
+  language?: string,
+): T | undefined => {
   if (language !== undefined) {
     const matched = items.find((item) => item.language === language)
     if (matched) {
@@ -175,15 +138,15 @@ export const getFirstAnnotation = <T extends { language?: string }>(items: T[], 
 /**
  * Translated text of a line, preferring a language match.
  */
-export const getLineTranslate = (line: Line, language?: string): string | undefined => {
-  const annotation = getLineAnnotation(line)
-  return annotation ? getFirstAnnotation(annotation.translates, language)?.content : undefined
+export const getStorageLineTranslation = (line: Line, language?: string): string | undefined => {
+  const annotation = getStorageLineAnnotation(line)
+  return annotation ? getStorageFirstAnnotation(annotation.translations, language)?.content : undefined
 }
 
 /**
  * Romanized text of a line, preferring a language match.
  */
-export const getLineRoman = (line: Line, language?: string): string | undefined => {
-  const annotation = getLineAnnotation(line)
-  return annotation ? getFirstAnnotation(annotation.romans, language)?.content : undefined
+export const getStorageLineRoman = (line: Line, language?: string): string | undefined => {
+  const annotation = getStorageLineAnnotation(line)
+  return annotation ? getStorageFirstAnnotation(annotation.romans, language)?.content : undefined
 }

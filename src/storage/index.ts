@@ -1,11 +1,6 @@
 export * as Proto from './proto'
 
+export * from '../common'
+
 export * from './lyric'
-
-export * from './agent'
-export * from './meta'
-export * from './part'
-
-export * from './word'
-
 export * from './line'
