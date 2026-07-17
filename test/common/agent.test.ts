@@ -1,14 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
-import {
-  getAgentById,
-  getAgentLineCounts,
-  getPrimaryAgent,
-  makeAgentItem,
-  resolveAgents,
-  resolveLineAgents,
-} from '@root/index'
+import { getAgentById, getAgentLineCounts, getPrimaryAgent, makeAgentItem, resolveAgents, resolveLineAgents } from '@root/index'
 
 /**
  * Build two agents and three lines with overlapping references.

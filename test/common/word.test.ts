@@ -1,14 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
-import {
-  asWordNormal,
-  asWordSpace,
-  getWordDuration,
-  getWordTime,
-  makeWordNormal,
-  makeWordSpace,
-} from '@root/index'
+import { asWordNormal, asWordSpace, getWordDuration, getWordTime, makeWordNormal, makeWordSpace } from '@root/index'
 
 test('asWordNormal and asWordSpace unwrap the matching variant', () => {
   const normal = makeWordNormal({ content: 'hi' })

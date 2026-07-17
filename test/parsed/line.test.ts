@@ -1,13 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
-import {
-  asParsedLineInterlude,
-  asParsedLineNormal,
-  makeParsedLineInterlude,
-  makeParsedLineNormal,
-  makeWordNormal,
-} from '@root/index'
+import { asParsedLineInterlude, asParsedLineNormal, makeParsedLineInterlude, makeParsedLineNormal, makeWordNormal } from '@root/index'
 
 test('asParsedLineNormal and asParsedLineInterlude unwrap the matching variant', () => {
   const normal = makeParsedLineNormal({ words: [makeWordNormal({ content: 'hi' })] })

@@ -56,10 +56,7 @@ test('deriveParsedLineTranslations aggregates word translations by language', ()
 })
 
 test('getFirstAnnotation prefers a language match then falls back', () => {
-  const items = [
-    makeLineAnnotationTranslation({ content: '你好', language: 'zh' }),
-    makeLineAnnotationTranslation({ content: 'hi', language: 'en' }),
-  ]
+  const items = [makeLineAnnotationTranslation({ content: '你好', language: 'zh' }), makeLineAnnotationTranslation({ content: 'hi', language: 'en' })]
   assert.equal(getFirstAnnotation(items, 'en')?.content, 'hi')
   assert.equal(getFirstAnnotation(items)?.content, '你好')
   assert.equal(getFirstAnnotation(items, 'ko')?.content, '你好')

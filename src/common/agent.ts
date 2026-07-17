@@ -75,10 +75,7 @@ export const getAgentLineCounts = (lines: readonly AgentRefs[]): Map<string, num
  * Ties keep the earlier entry in the agents list.
  * Returns undefined when no listed agent is referenced.
  */
-export const getPrimaryAgent = (
-  agents: readonly AgentItem[],
-  lines: readonly AgentRefs[],
-): AgentItem | undefined => {
+export const getPrimaryAgent = (agents: readonly AgentItem[], lines: readonly AgentRefs[]): AgentItem | undefined => {
   const counts = getAgentLineCounts(lines)
   let result: AgentItem | undefined
   let best = 0

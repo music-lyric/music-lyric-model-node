@@ -23,9 +23,7 @@ export const makeStorageLine = (init?: MessageInitShape<typeof StorageLineSchema
 /**
  * Creates a storage background line.
  */
-export const makeStorageLineBackground = (
-  init?: MessageInitShape<typeof StorageLineBackgroundSchema>,
-): StorageLineBackground => {
+export const makeStorageLineBackground = (init?: MessageInitShape<typeof StorageLineBackgroundSchema>): StorageLineBackground => {
   return create(StorageLineBackgroundSchema, init)
 }
 

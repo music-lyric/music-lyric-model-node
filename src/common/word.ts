@@ -42,36 +42,28 @@ export const makeWordSpace = (init?: MessageInitShape<typeof WordSpaceSchema>): 
 /**
  * Creates a WordAnnotationContent, one token of a word annotation.
  */
-export const makeWordAnnotationContent = (
-  init?: MessageInitShape<typeof WordAnnotationContentSchema>,
-): WordAnnotationContent => {
+export const makeWordAnnotationContent = (init?: MessageInitShape<typeof WordAnnotationContentSchema>): WordAnnotationContent => {
   return create(WordAnnotationContentSchema, init)
 }
 
 /**
  * Creates a WordAnnotationRoman.
  */
-export const makeWordAnnotationRoman = (
-  init?: MessageInitShape<typeof WordAnnotationRomanSchema>,
-): WordAnnotationRoman => {
+export const makeWordAnnotationRoman = (init?: MessageInitShape<typeof WordAnnotationRomanSchema>): WordAnnotationRoman => {
   return create(WordAnnotationRomanSchema, init)
 }
 
 /**
  * Creates a WordAnnotationTranslation.
  */
-export const makeWordAnnotationTranslation = (
-  init?: MessageInitShape<typeof WordAnnotationTranslationSchema>,
-): WordAnnotationTranslation => {
+export const makeWordAnnotationTranslation = (init?: MessageInitShape<typeof WordAnnotationTranslationSchema>): WordAnnotationTranslation => {
   return create(WordAnnotationTranslationSchema, init)
 }
 
 /**
  * Creates a WordAnnotationRuby.
  */
-export const makeWordAnnotationRuby = (
-  init?: MessageInitShape<typeof WordAnnotationRubySchema>,
-): WordAnnotationRuby => {
+export const makeWordAnnotationRuby = (init?: MessageInitShape<typeof WordAnnotationRubySchema>): WordAnnotationRuby => {
   return create(WordAnnotationRubySchema, init)
 }
 

@@ -1,26 +1,8 @@
 import type { MessageInitShape } from '@bufbuild/protobuf'
-import type {
-  ParsedLine,
-  ParsedLineBackground,
-  ParsedLineInterlude,
-  ParsedLineNormal,
-} from '@root/parsed/proto'
-import type {
-  LineAnnotation,
-  LineAnnotationRoman,
-  LineAnnotationTranslation,
-  Time,
-  Unknown,
-  Word,
-  WordNormal,
-} from '@root/common/proto'
+import type { ParsedLine, ParsedLineBackground, ParsedLineInterlude, ParsedLineNormal } from '@root/parsed/proto'
+import type { LineAnnotation, LineAnnotationRoman, LineAnnotationTranslation, Time, Unknown, Word, WordNormal } from '@root/common/proto'
 
-import {
-  ParsedLineBackgroundSchema,
-  ParsedLineInterludeSchema,
-  ParsedLineNormalSchema,
-  ParsedLineSchema,
-} from '@root/parsed/proto'
+import { ParsedLineBackgroundSchema, ParsedLineInterludeSchema, ParsedLineNormalSchema, ParsedLineSchema } from '@root/parsed/proto'
 
 import { create } from '@bufbuild/protobuf'
 import {
@@ -45,9 +27,7 @@ export type ParsedLineContent = ParsedLineNormal | ParsedLineBackground
 /**
  * Whether a value is the ParsedLine oneof wrapper.
  */
-const isParsedLineWrapper = (
-  line: ParsedLine | ParsedLineContent | ParsedLineInterlude,
-): line is ParsedLine => {
+const isParsedLineWrapper = (line: ParsedLine | ParsedLineContent | ParsedLineInterlude): line is ParsedLine => {
   return 'body' in line
 }
 
@@ -61,36 +41,28 @@ export const makeParsedLineNormal = (init?: MessageInitShape<typeof ParsedLineNo
 /**
  * Creates a ParsedLineBackground.
  */
-export const makeParsedLineBackground = (
-  init?: MessageInitShape<typeof ParsedLineBackgroundSchema>,
-): ParsedLineBackground => {
+export const makeParsedLineBackground = (init?: MessageInitShape<typeof ParsedLineBackgroundSchema>): ParsedLineBackground => {
   return create(ParsedLineBackgroundSchema, init)
 }
 
 /**
  * Creates an interlude wrapped in a ParsedLine.
  */
-export const makeParsedLineInterlude = (
-  init?: MessageInitShape<typeof ParsedLineInterludeSchema>,
-): ParsedLine => {
+export const makeParsedLineInterlude = (init?: MessageInitShape<typeof ParsedLineInterludeSchema>): ParsedLine => {
   return create(ParsedLineSchema, { body: { case: 'interlude', value: init ?? {} } })
 }
 
 /**
  * Whether a ParsedLine holds a normal line.
  */
-export const isParsedLineNormal = (
-  line: ParsedLine,
-): line is ParsedLine & { body: { case: 'normal'; value: ParsedLineNormal } } => {
+export const isParsedLineNormal = (line: ParsedLine): line is ParsedLine & { body: { case: 'normal'; value: ParsedLineNormal } } => {
   return line.body.case === 'normal'
 }
 
 /**
  * Whether a ParsedLine holds an interlude.
  */
-export const isParsedLineInterlude = (
-  line: ParsedLine,
-): line is ParsedLine & { body: { case: 'interlude'; value: ParsedLineInterlude } } => {
+export const isParsedLineInterlude = (line: ParsedLine): line is ParsedLine & { body: { case: 'interlude'; value: ParsedLineInterlude } } => {
   return line.body.case === 'interlude'
 }
 
@@ -111,9 +83,7 @@ export const asParsedLineInterlude = (line: ParsedLine): ParsedLineInterlude | u
 /**
  * Time range of a line wrapper, normal body, background, or interlude.
  */
-export const getParsedLineTime = (
-  line: ParsedLine | ParsedLineContent | ParsedLineInterlude,
-): Time | undefined => {
+export const getParsedLineTime = (line: ParsedLine | ParsedLineContent | ParsedLineInterlude): Time | undefined => {
   if (isParsedLineWrapper(line)) {
     if (line.body.case === 'normal' || line.body.case === 'interlude') {
       return line.body.value.time
@@ -126,9 +96,7 @@ export const getParsedLineTime = (
 /**
  * Duration of a line in milliseconds.
  */
-export const getParsedLineDuration = (
-  line: ParsedLine | ParsedLineContent | ParsedLineInterlude,
-): number => {
+export const getParsedLineDuration = (line: ParsedLine | ParsedLineContent | ParsedLineInterlude): number => {
   return getTimeDuration(getParsedLineTime(line))
 }
 
@@ -167,9 +135,7 @@ export const getParsedLineLanguages = (line: ParsedLine | ParsedLineContent): st
 /**
  * Annotation of a line wrapper, normal body, or background; absent on an interlude wrapper.
  */
-export const getParsedLineAnnotation = (
-  line: ParsedLine | ParsedLineContent,
-): LineAnnotation | undefined => {
+export const getParsedLineAnnotation = (line: ParsedLine | ParsedLineContent): LineAnnotation | undefined => {
   if (isParsedLineWrapper(line)) {
     return asParsedLineNormal(line)?.annotation
   }
@@ -199,10 +165,7 @@ export const getParsedActiveLine = (lines: ParsedLine[], ms: number): ParsedLine
 /**
  * Translated text of a line, preferring a language match.
  */
-export const getParsedLineTranslation = (
-  line: ParsedLine | ParsedLineContent,
-  language?: string,
-): string | undefined => {
+export const getParsedLineTranslation = (line: ParsedLine | ParsedLineContent, language?: string): string | undefined => {
   const annotation = getParsedLineAnnotation(line)
   return annotation ? getFirstAnnotation(annotation.translations, language)?.content : undefined
 }
@@ -210,10 +173,7 @@ export const getParsedLineTranslation = (
 /**
  * Romanized text of a line, preferring a language match.
  */
-export const getParsedLineRoman = (
-  line: ParsedLine | ParsedLineContent,
-  language?: string,
-): string | undefined => {
+export const getParsedLineRoman = (line: ParsedLine | ParsedLineContent, language?: string): string | undefined => {
   const annotation = getParsedLineAnnotation(line)
   return annotation ? getFirstAnnotation(annotation.romans, language)?.content : undefined
 }
