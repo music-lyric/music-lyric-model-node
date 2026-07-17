@@ -3,10 +3,13 @@ import { test } from 'node:test'
 
 import {
   SCHEMA_VERSION,
+  asParsedLineNormal,
   decodeParsedInfo,
   encodeParsedInfo,
+  getAgentLineCounts,
   getParsedLineText,
   getParsedLineTime,
+  getPrimaryAgent,
   isParsedLineInterlude,
   isParsedLineNormal,
   makeAgentItem,
@@ -40,6 +43,16 @@ const buildInfo = () =>
     ],
   })
 
+/**
+ * Normal bodies from an info, skipping interludes.
+ */
+const normalLinesOf = (info: ReturnType<typeof buildInfo>) => {
+  return info.lines.flatMap((line) => {
+    const normal = asParsedLineNormal(line)
+    return normal ? [normal] : []
+  })
+}
+
 test('makeParsedInfo stamps the schema version', () => {
   assert.equal(makeParsedInfo().version, SCHEMA_VERSION)
   assert.equal(makeParsedInfo({ version: '0.0.1' }).version, SCHEMA_VERSION)
@@ -50,6 +63,13 @@ test('line guards and plain text read the body', () => {
   assert.equal(isParsedLineNormal(info.lines[0]), true)
   assert.equal(isParsedLineInterlude(info.lines[2]), true)
   assert.equal(getParsedLineText(info.lines[0]), 'hello')
+})
+
+test('agent line counts and primary agent over normal bodies', () => {
+  const info = buildInfo()
+  const normals = normalLinesOf(info)
+  assert.equal(getAgentLineCounts(normals).get('a1'), 2)
+  assert.equal(getPrimaryAgent(info.agents, normals)?.id, 'a1')
 })
 
 test('sortParsedLinesByTime orders ascending', () => {

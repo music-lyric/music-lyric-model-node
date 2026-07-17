@@ -5,13 +5,15 @@ import {
   SCHEMA_VERSION,
   decodeStorageLyric,
   encodeStorageLyric,
+  getAgentLineCounts,
+  getPrimaryAgent,
   getStorageLineText,
   getStorageLineTime,
   makeAgentItem,
   makeStorageLine,
   makeStorageLyric,
   makeWordNormal,
-  resolveAgents,
+  resolveLineAgents,
   storageLyricFromJson,
   storageLyricToJson,
 } from '@root/index'
@@ -47,9 +49,17 @@ test('line time, plain text and multi-agent resolution', () => {
   assert.equal(getStorageLineTime(first)?.start, 1000)
   assert.equal(getStorageLineText(first), 'hello')
   assert.deepEqual(
-    resolveAgents(lyric.agents, first.agents).map((agent) => agent.id),
+    resolveLineAgents(lyric.agents, first).map((agent) => agent.id),
     ['a1', 'a2'],
   )
+})
+
+test('agent line counts and primary agent', () => {
+  const lyric = buildLyric()
+  const counts = getAgentLineCounts(lyric.lines)
+  assert.equal(counts.get('a1'), 2)
+  assert.equal(counts.get('a2'), 1)
+  assert.equal(getPrimaryAgent(lyric.agents, lyric.lines)?.id, 'a1')
 })
 
 test('binary and json round-trip preserve content', () => {
