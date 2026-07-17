@@ -6,6 +6,4 @@ export * from './common'
 export * from './parsed'
 export * from './storage'
 
-export * from './convert'
-
 export * from './version'
