@@ -1,4 +1,4 @@
-export * as Proto from './proto'
+export * from './proto'
 
 export * from './time'
 export * from './unknown'

@@ -9,7 +9,7 @@
     "generate": "npm run generate:proto && npm run generate:version",
     "generate:proto": "buf generate proto",
     "generate:version": "tsx script/generate-proto-version.ts",
-    "build": "vite build && tsx script/build-dts.ts",
+    "build": "tsx script/build.ts",
     "test": "tsx --test \"test/**/*.test.ts\"",
     "format": "prettier --write ."
   },
@@ -23,13 +23,31 @@
   },
   "main": "./dist/index.comm.js",
   "module": "./dist/index.ecma.js",
-  "types": "./dist/types/index.d.ts",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "dev": "./src/index.ts",
-      "types": "./dist/types/index.d.ts",
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.ecma.js",
       "require": "./dist/index.comm.js"
+    },
+    "./common": {
+      "dev": "./src/common/index.ts",
+      "types": "./dist/common/index.d.ts",
+      "import": "./dist/common/index.ecma.js",
+      "require": "./dist/common/index.comm.js"
+    },
+    "./parsed": {
+      "dev": "./src/parsed/index.ts",
+      "types": "./dist/parsed/index.d.ts",
+      "import": "./dist/parsed/index.ecma.js",
+      "require": "./dist/parsed/index.comm.js"
+    },
+    "./storage": {
+      "dev": "./src/storage/index.ts",
+      "types": "./dist/storage/index.d.ts",
+      "import": "./dist/storage/index.ecma.js",
+      "require": "./dist/storage/index.comm.js"
     }
   },
   "sideEffects": false,
@@ -37,7 +55,7 @@
     "dist"
   ],
   "dependencies": {
-    "@bufbuild/protobuf": "^2.12.1"
+    "@bufbuild/protobuf": "2.12.1"
   },
   "devDependencies": {
     "@rollup/plugin-alias": "^6.0.0",

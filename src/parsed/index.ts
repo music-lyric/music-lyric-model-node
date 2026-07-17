@@ -1,6 +1,4 @@
-export * as Proto from './proto'
-
-export * from '../common'
+export * from './proto'
 
 export * from './info'
 export * from './language'

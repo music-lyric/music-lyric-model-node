@@ -1,20 +1,32 @@
 import type { MessageInitShape } from '@bufbuild/protobuf'
-import type { Time } from '@root/common/proto'
-import type { Line, LineBackground, LineInterlude, LineNormal, Word, WordNormal } from '@root/parsed/proto'
-import type { LineAnnotation, LineAnnotationRoman, LineAnnotationTranslation, Unknown } from '@root/common/proto'
+import type {
+  ParsedLine,
+  ParsedLineBackground,
+  ParsedLineInterlude,
+  ParsedLineNormal,
+} from '@root/parsed/proto'
+import type {
+  LineAnnotation,
+  LineAnnotationRoman,
+  LineAnnotationTranslation,
+  Time,
+  Unknown,
+  Word,
+  WordNormal,
+} from '@root/common/proto'
 
 import {
-  LineBackgroundSchema,
-  LineInterludeSchema,
-  LineNormalSchema,
-  LineSchema,
+  ParsedLineBackgroundSchema,
+  ParsedLineInterludeSchema,
+  ParsedLineNormalSchema,
+  ParsedLineSchema,
 } from '@root/parsed/proto'
 
 import { create } from '@bufbuild/protobuf'
 import {
   getTimeDuration,
   getWordAnnotationText,
-  getWordText,
+  getWordsLanguages,
   getWordsText,
   isTimeActive,
   makeLineAnnotation,
@@ -24,32 +36,34 @@ import {
 } from '@root/common'
 
 /**
- * Creates a normal line wrapped in a Line.
+ * Creates a normal line wrapped in a ParsedLine.
  */
-export const makeParsedLineNormal = (init?: MessageInitShape<typeof LineNormalSchema>): Line => {
-  return create(LineSchema, { body: { case: 'normal', value: init ?? {} } })
+export const makeParsedLineNormal = (init?: MessageInitShape<typeof ParsedLineNormalSchema>): ParsedLine => {
+  return create(ParsedLineSchema, { body: { case: 'normal', value: init ?? {} } })
 }
 
 /**
- * Creates a LineBackground.
+ * Creates a ParsedLineBackground.
  */
 export const makeParsedLineBackground = (
-  init?: MessageInitShape<typeof LineBackgroundSchema>,
-): LineBackground => {
-  return create(LineBackgroundSchema, init)
+  init?: MessageInitShape<typeof ParsedLineBackgroundSchema>,
+): ParsedLineBackground => {
+  return create(ParsedLineBackgroundSchema, init)
 }
 
 /**
- * Creates an interlude wrapped in a Line.
+ * Creates an interlude wrapped in a ParsedLine.
  */
-export const makeParsedLineInterlude = (init?: MessageInitShape<typeof LineInterludeSchema>): Line => {
-  return create(LineSchema, { body: { case: 'interlude', value: init ?? {} } })
+export const makeParsedLineInterlude = (
+  init?: MessageInitShape<typeof ParsedLineInterludeSchema>,
+): ParsedLine => {
+  return create(ParsedLineSchema, { body: { case: 'interlude', value: init ?? {} } })
 }
 
 /**
  * Time range of a line body.
  */
-export const getParsedLineTime = (line: Line): Time | undefined => {
+export const getParsedLineTime = (line: ParsedLine): Time | undefined => {
   if (line.body.case === 'normal' || line.body.case === 'interlude') {
     return line.body.value.time
   }
@@ -59,61 +73,47 @@ export const getParsedLineTime = (line: Line): Time | undefined => {
 /**
  * Duration of a line in milliseconds.
  */
-export const getParsedLineDuration = (line: Line): number => {
+export const getParsedLineDuration = (line: ParsedLine): number => {
   return getTimeDuration(getParsedLineTime(line))
 }
 
 /**
  * Normal body of a line, if any.
  */
-export const asParsedLineNormal = (line: Line): LineNormal | undefined => {
+export const asParsedLineNormal = (line: ParsedLine): ParsedLineNormal | undefined => {
   return isParsedLineNormal(line) ? line.body.value : undefined
 }
 
 /**
  * Interlude body of a line, if any.
  */
-export const asParsedLineInterlude = (line: Line): LineInterlude | undefined => {
+export const asParsedLineInterlude = (line: ParsedLine): ParsedLineInterlude | undefined => {
   return isParsedLineInterlude(line) ? line.body.value : undefined
 }
 
 /**
  * Words of a line, empty for an interlude.
  */
-export const getParsedLineWords = (line: Line): Word[] => {
+export const getParsedLineWords = (line: ParsedLine): Word[] => {
   return asParsedLineNormal(line)?.words ?? []
 }
 
 /**
  * Plain text of a line.
  */
-export const getParsedLineText = (line: Line): string => {
+export const getParsedLineText = (line: ParsedLine): string => {
   return getWordsText(getParsedLineWords(line))
 }
 
 /**
  * Distinct language tags among a list of words.
  */
-export const getParsedWordsLanguages = (words: Word[]): string[] => {
-  const result: string[] = []
-  const seen = new Set<string>()
-  for (let i = 0, len = words.length; i < len; i++) {
-    const word = words[i]
-    if (word.body.case === 'normal' && word.body.value.language) {
-      const tag = word.body.value.language
-      if (!seen.has(tag)) {
-        seen.add(tag)
-        result.push(tag)
-      }
-    }
-  }
-  return result
-}
+export const getParsedWordsLanguages = getWordsLanguages
 
 /**
  * Languages of a line: the explicit tags, otherwise those of its words.
  */
-export const getParsedLineLanguages = (line: Line): string[] => {
+export const getParsedLineLanguages = (line: ParsedLine): string[] => {
   const normal = asParsedLineNormal(line)
   if (!normal) {
     return []
@@ -121,30 +121,30 @@ export const getParsedLineLanguages = (line: Line): string[] => {
   if (normal.languages.length) {
     return normal.languages
   }
-  return getParsedWordsLanguages(normal.words)
+  return getWordsLanguages(normal.words)
 }
 
 /**
  * Languages of a background line: the explicit tags, otherwise those of its words.
  */
-export const getParsedBackgroundLanguages = (background: LineBackground): string[] => {
+export const getParsedBackgroundLanguages = (background: ParsedLineBackground): string[] => {
   if (background.languages.length) {
     return background.languages
   }
-  return getParsedWordsLanguages(background.words)
+  return getWordsLanguages(background.words)
 }
 
 /**
  * Annotation of a line, absent on an interlude.
  */
-export const getParsedLineAnnotation = (line: Line): LineAnnotation | undefined => {
+export const getParsedLineAnnotation = (line: ParsedLine): LineAnnotation | undefined => {
   return asParsedLineNormal(line)?.annotation
 }
 
 /**
  * Index of the line active at the given moment, or -1 when none.
  */
-export const getParsedActiveLineIndex = (lines: Line[], ms: number): number => {
+export const getParsedActiveLineIndex = (lines: ParsedLine[], ms: number): number => {
   for (let i = 0, len = lines.length; i < len; i++) {
     if (isTimeActive(getParsedLineTime(lines[i]), ms)) {
       return i
@@ -156,7 +156,7 @@ export const getParsedActiveLineIndex = (lines: Line[], ms: number): number => {
 /**
  * Line active at the given moment, if any.
  */
-export const getParsedActiveLine = (lines: Line[], ms: number): Line | undefined => {
+export const getParsedActiveLine = (lines: ParsedLine[], ms: number): ParsedLine | undefined => {
   const index = getParsedActiveLineIndex(lines, ms)
   return index === -1 ? undefined : lines[index]
 }
@@ -180,7 +180,7 @@ export const getParsedFirstAnnotation = <T extends { language?: string }>(
 /**
  * Translated text of a line, preferring a language match.
  */
-export const getParsedLineTranslation = (line: Line, language?: string): string | undefined => {
+export const getParsedLineTranslation = (line: ParsedLine, language?: string): string | undefined => {
   const annotation = getParsedLineAnnotation(line)
   return annotation ? getParsedFirstAnnotation(annotation.translations, language)?.content : undefined
 }
@@ -188,26 +188,26 @@ export const getParsedLineTranslation = (line: Line, language?: string): string 
 /**
  * Romanized text of a line, preferring a language match.
  */
-export const getParsedLineRoman = (line: Line, language?: string): string | undefined => {
+export const getParsedLineRoman = (line: ParsedLine, language?: string): string | undefined => {
   const annotation = getParsedLineAnnotation(line)
   return annotation ? getParsedFirstAnnotation(annotation.romans, language)?.content : undefined
 }
 
 /**
- * Whether a Line holds a normal line.
+ * Whether a ParsedLine holds a normal line.
  */
 export const isParsedLineNormal = (
-  line: Line,
-): line is Line & { body: { case: 'normal'; value: LineNormal } } => {
+  line: ParsedLine,
+): line is ParsedLine & { body: { case: 'normal'; value: ParsedLineNormal } } => {
   return line.body.case === 'normal'
 }
 
 /**
- * Whether a Line holds an interlude.
+ * Whether a ParsedLine holds an interlude.
  */
 export const isParsedLineInterlude = (
-  line: Line,
-): line is Line & { body: { case: 'interlude'; value: LineInterlude } } => {
+  line: ParsedLine,
+): line is ParsedLine & { body: { case: 'interlude'; value: ParsedLineInterlude } } => {
   return line.body.case === 'interlude'
 }
 

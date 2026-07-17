@@ -113,6 +113,25 @@ export const getWordsText = (words: Word[]): string => {
 }
 
 /**
+ * Distinct language tags among a list of words, in first-seen order.
+ */
+export const getWordsLanguages = (words: Word[]): string[] => {
+  const result: string[] = []
+  const seen = new Set<string>()
+  for (let i = 0, len = words.length; i < len; i++) {
+    const word = words[i]
+    if (word.body.case === 'normal' && word.body.value.language) {
+      const tag = word.body.value.language
+      if (!seen.has(tag)) {
+        seen.add(tag)
+        result.push(tag)
+      }
+    }
+  }
+  return result
+}
+
+/**
  * Time range of a word, if any.
  * Accepts either the Word wrapper or a bare WordNormal.
  */

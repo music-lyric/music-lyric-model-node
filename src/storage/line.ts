@@ -1,108 +1,93 @@
 import type { MessageInitShape } from '@bufbuild/protobuf'
-import type { Time } from '@root/common/proto'
-import type { Line, LineBackground } from '@root/storage/proto'
-import type { LineAnnotation, Word } from '@root/common/proto'
+import type { LineAnnotation, Time, Word } from '@root/common/proto'
+import type { StorageLine, StorageLineBackground } from '@root/storage/proto'
 
-import { LineBackgroundSchema, LineSchema } from '@root/storage/proto'
+import { StorageLineBackgroundSchema, StorageLineSchema } from '@root/storage/proto'
 
 import { create } from '@bufbuild/protobuf'
-import { getTimeDuration, getWordsText, isTimeActive } from '@root/common'
+import { getTimeDuration, getWordsLanguages, getWordsText, isTimeActive } from '@root/common'
 
 /**
- * Creates a storage Line.
+ * Creates a storage line.
  */
-export const makeStorageLine = (init?: MessageInitShape<typeof LineSchema>): Line => {
-  return create(LineSchema, init)
+export const makeStorageLine = (init?: MessageInitShape<typeof StorageLineSchema>): StorageLine => {
+  return create(StorageLineSchema, init)
 }
 
 /**
- * Creates a storage LineBackground.
+ * Creates a storage background line.
  */
 export const makeStorageLineBackground = (
-  init?: MessageInitShape<typeof LineBackgroundSchema>,
-): LineBackground => {
-  return create(LineBackgroundSchema, init)
+  init?: MessageInitShape<typeof StorageLineBackgroundSchema>,
+): StorageLineBackground => {
+  return create(StorageLineBackgroundSchema, init)
 }
 
 /**
  * Time range of a line.
  */
-export const getStorageLineTime = (line: Line): Time | undefined => {
+export const getStorageLineTime = (line: StorageLine): Time | undefined => {
   return line.time
 }
 
 /**
  * Time range of a background line.
  */
-export const getStorageBackgroundTime = (background: LineBackground): Time | undefined => {
+export const getStorageBackgroundTime = (background: StorageLineBackground): Time | undefined => {
   return background.time
 }
 
 /**
  * Duration of a line in milliseconds.
  */
-export const getStorageLineDuration = (line: Line): number => {
+export const getStorageLineDuration = (line: StorageLine): number => {
   return getTimeDuration(getStorageLineTime(line))
 }
 
 /**
  * Words of a line.
  */
-export const getStorageLineWords = (line: Line): Word[] => {
+export const getStorageLineWords = (line: StorageLine): Word[] => {
   return line.words
 }
 
 /**
  * Plain text of a line.
  */
-export const getStorageLineText = (line: Line): string => {
+export const getStorageLineText = (line: StorageLine): string => {
   return getWordsText(line.words)
 }
 
 /**
  * Plain text of a background line.
  */
-export const getStorageBackgroundText = (background: LineBackground): string => {
+export const getStorageBackgroundText = (background: StorageLineBackground): string => {
   return getWordsText(background.words)
 }
 
 /**
  * Distinct language tags among a list of words, in first-seen order.
  */
-export const getStorageWordsLanguages = (words: Word[]): string[] => {
-  const result: string[] = []
-  const seen = new Set<string>()
-  for (let i = 0, len = words.length; i < len; i++) {
-    const word = words[i]
-    if (word.body.case === 'normal' && word.body.value.language) {
-      const tag = word.body.value.language
-      if (!seen.has(tag)) {
-        seen.add(tag)
-        result.push(tag)
-      }
-    }
-  }
-  return result
-}
+export const getStorageWordsLanguages = getWordsLanguages
 
 /**
  * Languages of a line, collected from its words.
  */
-export const getStorageLineLanguages = (line: Line): string[] => {
-  return getStorageWordsLanguages(line.words)
+export const getStorageLineLanguages = (line: StorageLine): string[] => {
+  return getWordsLanguages(line.words)
 }
 
 /**
  * Annotation of a line.
  */
-export const getStorageLineAnnotation = (line: Line): LineAnnotation | undefined => {
+export const getStorageLineAnnotation = (line: StorageLine): LineAnnotation | undefined => {
   return line.annotation
 }
 
 /**
  * Index of the line active at the given moment, or -1 when none.
  */
-export const getStorageActiveLineIndex = (lines: Line[], ms: number): number => {
+export const getStorageActiveLineIndex = (lines: StorageLine[], ms: number): number => {
   for (let i = 0, len = lines.length; i < len; i++) {
     if (isTimeActive(getStorageLineTime(lines[i]), ms)) {
       return i
@@ -114,7 +99,7 @@ export const getStorageActiveLineIndex = (lines: Line[], ms: number): number => 
 /**
  * Line active at the given moment, if any.
  */
-export const getStorageActiveLine = (lines: Line[], ms: number): Line | undefined => {
+export const getStorageActiveLine = (lines: StorageLine[], ms: number): StorageLine | undefined => {
   const index = getStorageActiveLineIndex(lines, ms)
   return index === -1 ? undefined : lines[index]
 }
@@ -138,7 +123,7 @@ export const getStorageFirstAnnotation = <T extends { language?: string }>(
 /**
  * Translated text of a line, preferring a language match.
  */
-export const getStorageLineTranslation = (line: Line, language?: string): string | undefined => {
+export const getStorageLineTranslation = (line: StorageLine, language?: string): string | undefined => {
   const annotation = getStorageLineAnnotation(line)
   return annotation ? getStorageFirstAnnotation(annotation.translations, language)?.content : undefined
 }
@@ -146,7 +131,7 @@ export const getStorageLineTranslation = (line: Line, language?: string): string
 /**
  * Romanized text of a line, preferring a language match.
  */
-export const getStorageLineRoman = (line: Line, language?: string): string | undefined => {
+export const getStorageLineRoman = (line: StorageLine, language?: string): string | undefined => {
   const annotation = getStorageLineAnnotation(line)
   return annotation ? getStorageFirstAnnotation(annotation.romans, language)?.content : undefined
 }
