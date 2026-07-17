@@ -37,6 +37,21 @@ import {
 } from '@root/common'
 
 /**
+ * A parsed normal body or background line.
+ * Shared fields: time, agents, languages, words, annotation.
+ */
+export type ParsedLineContent = ParsedLineNormal | ParsedLineBackground
+
+/**
+ * Whether a value is the ParsedLine oneof wrapper.
+ */
+const isParsedLineWrapper = (
+  line: ParsedLine | ParsedLineContent | ParsedLineInterlude,
+): line is ParsedLine => {
+  return 'body' in line
+}
+
+/**
  * Creates a normal line wrapped in a ParsedLine.
  */
 export const makeParsedLineNormal = (init?: MessageInitShape<typeof ParsedLineNormalSchema>): ParsedLine => {
@@ -62,20 +77,21 @@ export const makeParsedLineInterlude = (
 }
 
 /**
- * Time range of a line body.
+ * Whether a ParsedLine holds a normal line.
  */
-export const getParsedLineTime = (line: ParsedLine): Time | undefined => {
-  if (line.body.case === 'normal' || line.body.case === 'interlude') {
-    return line.body.value.time
-  }
-  return undefined
+export const isParsedLineNormal = (
+  line: ParsedLine,
+): line is ParsedLine & { body: { case: 'normal'; value: ParsedLineNormal } } => {
+  return line.body.case === 'normal'
 }
 
 /**
- * Duration of a line in milliseconds.
+ * Whether a ParsedLine holds an interlude.
  */
-export const getParsedLineDuration = (line: ParsedLine): number => {
-  return getTimeDuration(getParsedLineTime(line))
+export const isParsedLineInterlude = (
+  line: ParsedLine,
+): line is ParsedLine & { body: { case: 'interlude'; value: ParsedLineInterlude } } => {
+  return line.body.case === 'interlude'
 }
 
 /**
@@ -93,48 +109,71 @@ export const asParsedLineInterlude = (line: ParsedLine): ParsedLineInterlude | u
 }
 
 /**
- * Words of a line, empty for an interlude.
+ * Time range of a line wrapper, normal body, background, or interlude.
  */
-export const getParsedLineWords = (line: ParsedLine): Word[] => {
-  return asParsedLineNormal(line)?.words ?? []
+export const getParsedLineTime = (
+  line: ParsedLine | ParsedLineContent | ParsedLineInterlude,
+): Time | undefined => {
+  if (isParsedLineWrapper(line)) {
+    if (line.body.case === 'normal' || line.body.case === 'interlude') {
+      return line.body.value.time
+    }
+    return undefined
+  }
+  return line.time
 }
 
 /**
- * Plain text of a line.
+ * Duration of a line in milliseconds.
  */
-export const getParsedLineText = (line: ParsedLine): string => {
+export const getParsedLineDuration = (
+  line: ParsedLine | ParsedLineContent | ParsedLineInterlude,
+): number => {
+  return getTimeDuration(getParsedLineTime(line))
+}
+
+/**
+ * Words of a line wrapper, normal body, or background; empty for an interlude wrapper.
+ */
+export const getParsedLineWords = (line: ParsedLine | ParsedLineContent): Word[] => {
+  if (isParsedLineWrapper(line)) {
+    return asParsedLineNormal(line)?.words ?? []
+  }
+  return line.words
+}
+
+/**
+ * Plain text of a line wrapper, normal body, or background.
+ */
+export const getParsedLineText = (line: ParsedLine | ParsedLineContent): string => {
   return getWordsText(getParsedLineWords(line))
 }
 
 /**
- * Languages of a line: the explicit tags, otherwise those of its words.
+ * Languages of a line: explicit tags when present, otherwise those of its words.
+ * Accepts a line wrapper, normal body, or background; empty for an interlude wrapper.
  */
-export const getParsedLineLanguages = (line: ParsedLine): string[] => {
-  const normal = asParsedLineNormal(line)
-  if (!normal) {
-    return []
+export const getParsedLineLanguages = (line: ParsedLine | ParsedLineContent): string[] => {
+  if (isParsedLineWrapper(line)) {
+    const normal = asParsedLineNormal(line)
+    if (!normal) {
+      return []
+    }
+    return languagesOf(normal)
   }
-  if (normal.languages.length) {
-    return normal.languages
-  }
-  return getWordsLanguages(normal.words)
+  return languagesOf(line)
 }
 
 /**
- * Languages of a background line: the explicit tags, otherwise those of its words.
+ * Annotation of a line wrapper, normal body, or background; absent on an interlude wrapper.
  */
-export const getParsedBackgroundLanguages = (background: ParsedLineBackground): string[] => {
-  if (background.languages.length) {
-    return background.languages
+export const getParsedLineAnnotation = (
+  line: ParsedLine | ParsedLineContent,
+): LineAnnotation | undefined => {
+  if (isParsedLineWrapper(line)) {
+    return asParsedLineNormal(line)?.annotation
   }
-  return getWordsLanguages(background.words)
-}
-
-/**
- * Annotation of a line, absent on an interlude.
- */
-export const getParsedLineAnnotation = (line: ParsedLine): LineAnnotation | undefined => {
-  return asParsedLineNormal(line)?.annotation
+  return line.annotation
 }
 
 /**
@@ -160,7 +199,10 @@ export const getParsedActiveLine = (lines: ParsedLine[], ms: number): ParsedLine
 /**
  * Translated text of a line, preferring a language match.
  */
-export const getParsedLineTranslation = (line: ParsedLine, language?: string): string | undefined => {
+export const getParsedLineTranslation = (
+  line: ParsedLine | ParsedLineContent,
+  language?: string,
+): string | undefined => {
   const annotation = getParsedLineAnnotation(line)
   return annotation ? getFirstAnnotation(annotation.translations, language)?.content : undefined
 }
@@ -168,27 +210,22 @@ export const getParsedLineTranslation = (line: ParsedLine, language?: string): s
 /**
  * Romanized text of a line, preferring a language match.
  */
-export const getParsedLineRoman = (line: ParsedLine, language?: string): string | undefined => {
+export const getParsedLineRoman = (
+  line: ParsedLine | ParsedLineContent,
+  language?: string,
+): string | undefined => {
   const annotation = getParsedLineAnnotation(line)
   return annotation ? getFirstAnnotation(annotation.romans, language)?.content : undefined
 }
 
 /**
- * Whether a ParsedLine holds a normal line.
+ * Explicit languages, or those derived from words when empty.
  */
-export const isParsedLineNormal = (
-  line: ParsedLine,
-): line is ParsedLine & { body: { case: 'normal'; value: ParsedLineNormal } } => {
-  return line.body.case === 'normal'
-}
-
-/**
- * Whether a ParsedLine holds an interlude.
- */
-export const isParsedLineInterlude = (
-  line: ParsedLine,
-): line is ParsedLine & { body: { case: 'interlude'; value: ParsedLineInterlude } } => {
-  return line.body.case === 'interlude'
+const languagesOf = (item: { languages: string[]; words: Word[] }): string[] => {
+  if (item.languages.length) {
+    return item.languages
+  }
+  return getWordsLanguages(item.words)
 }
 
 /**

@@ -8,6 +8,12 @@ import { create } from '@bufbuild/protobuf'
 import { getFirstAnnotation, getTimeDuration, getWordsLanguages, getWordsText, isTimeActive } from '@root/common'
 
 /**
+ * A storage primary line or background line.
+ * Shared fields: time, agents, words, annotation.
+ */
+export type StorageLineLike = StorageLine | StorageLineBackground
+
+/**
  * Creates a storage line.
  */
 export const makeStorageLine = (init?: MessageInitShape<typeof StorageLineSchema>): StorageLine => {
@@ -24,58 +30,44 @@ export const makeStorageLineBackground = (
 }
 
 /**
- * Time range of a line.
+ * Time range of a primary or background line.
  */
-export const getStorageLineTime = (line: StorageLine): Time | undefined => {
+export const getStorageLineTime = (line: StorageLineLike): Time | undefined => {
   return line.time
 }
 
 /**
- * Time range of a background line.
+ * Duration of a primary or background line in milliseconds.
  */
-export const getStorageBackgroundTime = (background: StorageLineBackground): Time | undefined => {
-  return background.time
-}
-
-/**
- * Duration of a line in milliseconds.
- */
-export const getStorageLineDuration = (line: StorageLine): number => {
+export const getStorageLineDuration = (line: StorageLineLike): number => {
   return getTimeDuration(getStorageLineTime(line))
 }
 
 /**
- * Words of a line.
+ * Words of a primary or background line.
  */
-export const getStorageLineWords = (line: StorageLine): Word[] => {
+export const getStorageLineWords = (line: StorageLineLike): Word[] => {
   return line.words
 }
 
 /**
- * Plain text of a line.
+ * Plain text of a primary or background line.
  */
-export const getStorageLineText = (line: StorageLine): string => {
+export const getStorageLineText = (line: StorageLineLike): string => {
   return getWordsText(line.words)
 }
 
 /**
- * Plain text of a background line.
+ * Languages of a primary or background line, collected from its words.
  */
-export const getStorageBackgroundText = (background: StorageLineBackground): string => {
-  return getWordsText(background.words)
-}
-
-/**
- * Languages of a line, collected from its words.
- */
-export const getStorageLineLanguages = (line: StorageLine): string[] => {
+export const getStorageLineLanguages = (line: StorageLineLike): string[] => {
   return getWordsLanguages(line.words)
 }
 
 /**
- * Annotation of a line.
+ * Annotation of a primary or background line.
  */
-export const getStorageLineAnnotation = (line: StorageLine): LineAnnotation | undefined => {
+export const getStorageLineAnnotation = (line: StorageLineLike): LineAnnotation | undefined => {
   return line.annotation
 }
 
@@ -100,17 +92,17 @@ export const getStorageActiveLine = (lines: StorageLine[], ms: number): StorageL
 }
 
 /**
- * Translated text of a line, preferring a language match.
+ * Translated text of a primary or background line, preferring a language match.
  */
-export const getStorageLineTranslation = (line: StorageLine, language?: string): string | undefined => {
+export const getStorageLineTranslation = (line: StorageLineLike, language?: string): string | undefined => {
   const annotation = getStorageLineAnnotation(line)
   return annotation ? getFirstAnnotation(annotation.translations, language)?.content : undefined
 }
 
 /**
- * Romanized text of a line, preferring a language match.
+ * Romanized text of a primary or background line, preferring a language match.
  */
-export const getStorageLineRoman = (line: StorageLine, language?: string): string | undefined => {
+export const getStorageLineRoman = (line: StorageLineLike, language?: string): string | undefined => {
   const annotation = getStorageLineAnnotation(line)
   return annotation ? getFirstAnnotation(annotation.romans, language)?.content : undefined
 }
