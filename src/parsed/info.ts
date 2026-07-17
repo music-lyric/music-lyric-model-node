@@ -2,7 +2,7 @@ import type { JsonValue, MessageInitShape } from '@bufbuild/protobuf'
 import type { Info } from '@root/parsed/proto'
 
 import { SCHEMA_VERSION } from '@root/version'
-import { InfoSchema } from '@root/parsed/proto'
+import { InfoSchema, InfoType } from '@root/parsed/proto'
 
 import { create, fromBinary, fromJson, toBinary, toJson } from '@bufbuild/protobuf'
 import { getParsedLineTime, isParsedLineNormal } from '@root/parsed/line'
@@ -12,6 +12,20 @@ import { getParsedLineTime, isParsedLineNormal } from '@root/parsed/line'
  */
 export const makeParsedInfo = (init?: MessageInitShape<typeof InfoSchema>): Info => {
   return create(InfoSchema, { ...init, version: SCHEMA_VERSION })
+}
+
+/**
+ * Whether an Info is marked valid.
+ */
+export const isParsedInfoValid = (info: Info): boolean => {
+  return info.type === InfoType.VALID
+}
+
+/**
+ * Whether an Info is marked invalid.
+ */
+export const isParsedInfoInvalid = (info: Info): boolean => {
+  return info.type === InfoType.INVALID
 }
 
 /**

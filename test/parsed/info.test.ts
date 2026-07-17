@@ -3,6 +3,7 @@ import { test } from 'node:test'
 
 import {
   SCHEMA_VERSION,
+  InfoType,
   asParsedLineNormal,
   decodeParsedInfo,
   encodeParsedInfo,
@@ -10,6 +11,8 @@ import {
   getParsedLineText,
   getParsedLineTime,
   getPrimaryAgent,
+  isParsedInfoInvalid,
+  isParsedInfoValid,
   isParsedLineInterlude,
   isParsedLineNormal,
   makeAgentItem,
@@ -56,6 +59,15 @@ const normalLinesOf = (info: ReturnType<typeof buildInfo>) => {
 test('makeParsedInfo stamps the schema version', () => {
   assert.equal(makeParsedInfo().version, SCHEMA_VERSION)
   assert.equal(makeParsedInfo({ version: '0.0.1' }).version, SCHEMA_VERSION)
+})
+
+test('isParsedInfoValid and isParsedInfoInvalid read InfoType', () => {
+  assert.equal(isParsedInfoValid(makeParsedInfo({ type: InfoType.VALID })), true)
+  assert.equal(isParsedInfoInvalid(makeParsedInfo({ type: InfoType.VALID })), false)
+  assert.equal(isParsedInfoInvalid(makeParsedInfo({ type: InfoType.INVALID })), true)
+  assert.equal(isParsedInfoValid(makeParsedInfo({ type: InfoType.INVALID })), false)
+  assert.equal(isParsedInfoValid(makeParsedInfo()), false)
+  assert.equal(isParsedInfoInvalid(makeParsedInfo()), false)
 })
 
 test('line guards and plain text read the body', () => {
