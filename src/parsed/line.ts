@@ -24,6 +24,7 @@ import {
 
 import { create } from '@bufbuild/protobuf'
 import {
+  getFirstAnnotation,
   getTimeDuration,
   getWordAnnotationText,
   getWordsLanguages,
@@ -106,11 +107,6 @@ export const getParsedLineText = (line: ParsedLine): string => {
 }
 
 /**
- * Distinct language tags among a list of words.
- */
-export const getParsedWordsLanguages = getWordsLanguages
-
-/**
  * Languages of a line: the explicit tags, otherwise those of its words.
  */
 export const getParsedLineLanguages = (line: ParsedLine): string[] => {
@@ -162,27 +158,11 @@ export const getParsedActiveLine = (lines: ParsedLine[], ms: number): ParsedLine
 }
 
 /**
- * First annotation item, preferring a language match.
- */
-export const getParsedFirstAnnotation = <T extends { language?: string }>(
-  items: T[],
-  language?: string,
-): T | undefined => {
-  if (language !== undefined) {
-    const matched = items.find((item) => item.language === language)
-    if (matched) {
-      return matched
-    }
-  }
-  return items[0]
-}
-
-/**
  * Translated text of a line, preferring a language match.
  */
 export const getParsedLineTranslation = (line: ParsedLine, language?: string): string | undefined => {
   const annotation = getParsedLineAnnotation(line)
-  return annotation ? getParsedFirstAnnotation(annotation.translations, language)?.content : undefined
+  return annotation ? getFirstAnnotation(annotation.translations, language)?.content : undefined
 }
 
 /**
@@ -190,7 +170,7 @@ export const getParsedLineTranslation = (line: ParsedLine, language?: string): s
  */
 export const getParsedLineRoman = (line: ParsedLine, language?: string): string | undefined => {
   const annotation = getParsedLineAnnotation(line)
-  return annotation ? getParsedFirstAnnotation(annotation.romans, language)?.content : undefined
+  return annotation ? getFirstAnnotation(annotation.romans, language)?.content : undefined
 }
 
 /**

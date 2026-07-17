@@ -8,7 +8,6 @@ import {
 } from '@root/common/proto'
 
 import { create } from '@bufbuild/protobuf'
-import { makeUnknown } from '@root/common/unknown'
 
 /**
  * Creates a LineAnnotationRoman.
@@ -29,13 +28,24 @@ export const makeLineAnnotationTranslation = (
 }
 
 /**
- * Creates an Unknown entry for an unrecognized line annotation.
- */
-export const makeLineAnnotationUnknown = makeUnknown
-
-/**
  * Creates a LineAnnotation, the per-line annotation container.
  */
 export const makeLineAnnotation = (init?: MessageInitShape<typeof LineAnnotationSchema>): LineAnnotation => {
   return create(LineAnnotationSchema, init)
+}
+
+/**
+ * First annotation item, preferring a language match.
+ */
+export const getFirstAnnotation = <T extends { language?: string }>(
+  items: T[],
+  language?: string,
+): T | undefined => {
+  if (language !== undefined) {
+    const matched = items.find((item) => item.language === language)
+    if (matched) {
+      return matched
+    }
+  }
+  return items[0]
 }

@@ -4,7 +4,7 @@ import type { Meta, MetaCredit, MetaReference, MetaText, Unknown } from '@root/c
 import { MetaCreditSchema, MetaReferenceSchema, MetaSchema, MetaTextSchema } from '@root/common/proto'
 
 import { create } from '@bufbuild/protobuf'
-import { getUnknownValues, makeUnknown } from '@root/common/unknown'
+import { getUnknownValues } from '@root/common/unknown'
 
 /**
  * Creates a Meta, the lyric metadata container.
@@ -33,11 +33,6 @@ export const makeMetaCredit = (init?: MessageInitShape<typeof MetaCreditSchema>)
 export const makeMetaReference = (init?: MessageInitShape<typeof MetaReferenceSchema>): MetaReference => {
   return create(MetaReferenceSchema, init)
 }
-
-/**
- * Creates an Unknown entry for unrecognized meta (same type as other Unknowns).
- */
-export const makeMetaUnknown = makeUnknown
 
 /**
  * Text of a localized meta list, preferring a language match.

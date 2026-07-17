@@ -24,7 +24,6 @@ import {
 
 import { create } from '@bufbuild/protobuf'
 import { getTimeDuration, isTimeActive } from '@root/common/time'
-import { makeUnknown } from '@root/common/unknown'
 
 /**
  * Creates a normal word wrapped in a Word.
@@ -75,11 +74,6 @@ export const makeWordAnnotationRuby = (
 ): WordAnnotationRuby => {
   return create(WordAnnotationRubySchema, init)
 }
-
-/**
- * Creates an Unknown entry for an unrecognized word annotation.
- */
-export const makeWordAnnotationUnknown = makeUnknown
 
 /**
  * Creates a WordAnnotation, the per-word annotation container.

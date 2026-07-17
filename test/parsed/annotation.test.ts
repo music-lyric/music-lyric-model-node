@@ -4,7 +4,7 @@ import { test } from 'node:test'
 import {
   deriveParsedLineRomans,
   deriveParsedLineTranslations,
-  getParsedFirstAnnotation,
+  getFirstAnnotation,
   makeLineAnnotationTranslation,
   makeWordAnnotation,
   makeWordAnnotationContent,
@@ -55,12 +55,12 @@ test('deriveParsedLineTranslations aggregates word translations by language', ()
   assert.equal(item.language, 'en')
 })
 
-test('getParsedFirstAnnotation prefers a language match then falls back', () => {
+test('getFirstAnnotation prefers a language match then falls back', () => {
   const items = [
     makeLineAnnotationTranslation({ content: '你好', language: 'zh' }),
     makeLineAnnotationTranslation({ content: 'hi', language: 'en' }),
   ]
-  assert.equal(getParsedFirstAnnotation(items, 'en')?.content, 'hi')
-  assert.equal(getParsedFirstAnnotation(items)?.content, '你好')
-  assert.equal(getParsedFirstAnnotation(items, 'ko')?.content, '你好')
+  assert.equal(getFirstAnnotation(items, 'en')?.content, 'hi')
+  assert.equal(getFirstAnnotation(items)?.content, '你好')
+  assert.equal(getFirstAnnotation(items, 'ko')?.content, '你好')
 })

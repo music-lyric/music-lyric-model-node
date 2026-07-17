@@ -5,7 +5,7 @@ import type { StorageLine, StorageLineBackground } from '@root/storage/proto'
 import { StorageLineBackgroundSchema, StorageLineSchema } from '@root/storage/proto'
 
 import { create } from '@bufbuild/protobuf'
-import { getTimeDuration, getWordsLanguages, getWordsText, isTimeActive } from '@root/common'
+import { getFirstAnnotation, getTimeDuration, getWordsLanguages, getWordsText, isTimeActive } from '@root/common'
 
 /**
  * Creates a storage line.
@@ -66,11 +66,6 @@ export const getStorageBackgroundText = (background: StorageLineBackground): str
 }
 
 /**
- * Distinct language tags among a list of words, in first-seen order.
- */
-export const getStorageWordsLanguages = getWordsLanguages
-
-/**
  * Languages of a line, collected from its words.
  */
 export const getStorageLineLanguages = (line: StorageLine): string[] => {
@@ -105,27 +100,11 @@ export const getStorageActiveLine = (lines: StorageLine[], ms: number): StorageL
 }
 
 /**
- * First annotation item, preferring a language match.
- */
-export const getStorageFirstAnnotation = <T extends { language?: string }>(
-  items: T[],
-  language?: string,
-): T | undefined => {
-  if (language !== undefined) {
-    const matched = items.find((item) => item.language === language)
-    if (matched) {
-      return matched
-    }
-  }
-  return items[0]
-}
-
-/**
  * Translated text of a line, preferring a language match.
  */
 export const getStorageLineTranslation = (line: StorageLine, language?: string): string | undefined => {
   const annotation = getStorageLineAnnotation(line)
-  return annotation ? getStorageFirstAnnotation(annotation.translations, language)?.content : undefined
+  return annotation ? getFirstAnnotation(annotation.translations, language)?.content : undefined
 }
 
 /**
@@ -133,5 +112,5 @@ export const getStorageLineTranslation = (line: StorageLine, language?: string):
  */
 export const getStorageLineRoman = (line: StorageLine, language?: string): string | undefined => {
   const annotation = getStorageLineAnnotation(line)
-  return annotation ? getStorageFirstAnnotation(annotation.romans, language)?.content : undefined
+  return annotation ? getFirstAnnotation(annotation.romans, language)?.content : undefined
 }
